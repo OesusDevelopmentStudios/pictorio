@@ -54,4 +54,11 @@ ecm_find_qmlmodule(org.kde.ki18n REQUIRED)
 
 add_subdirectory(src)
 
+# BUILD_TESTING is ON by default (set by KDECMakeSettings). Turn it off with -DBUILD_TESTING=OFF,
+# e.g. for packaging. Run the tests with: ctest --test-dir <build dir>
+if(BUILD_TESTING)
+    find_package(Qt6 ${QT_MIN_VERSION} REQUIRED COMPONENTS Test)
+    add_subdirectory(tests)
+endif()
+
 feature_summary(WHAT ALL INCLUDE_QUIET_PACKAGES FATAL_ON_MISSING_REQUIRED_PACKAGES)
