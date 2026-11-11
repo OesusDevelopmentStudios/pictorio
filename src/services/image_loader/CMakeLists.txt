@@ -9,6 +9,8 @@ add_library(pictorio_image_loader STATIC
     ImageLoader.cpp
     ImageLoaderFactory.cpp
     impl/QtImageLoader.cpp
+    hlp/ExifCaptureDate.hpp
+    hlp/ExifCaptureDate.cpp
 )
 
 # Users of the service see only include/; impl/ stays private to the service.
@@ -24,4 +26,8 @@ target_link_libraries(pictorio_image_loader
         Qt6::Gui        # QImageIOHandler, QSize in the public header
     PRIVATE
         KF6::I18n
+        LibExiv2::LibExiv2
 )
+
+# exiv2 reports errors with exceptions, which KDE's compiler settings turn off by default.
+kde_target_enable_exceptions(pictorio_image_loader PRIVATE)

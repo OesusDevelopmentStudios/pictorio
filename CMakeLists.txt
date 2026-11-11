@@ -53,6 +53,10 @@ find_package(KF6 ${KF_MIN_VERSION} REQUIRED COMPONENTS
     CoreAddons   # application metadata (KAboutData)
 )
 
+# Image metadata: the date a photo was taken. ECM's find module, because exiv2's own CMake package
+# accepts only the exact version asked for.
+find_package(LibExiv2 0.28 REQUIRED)
+
 # Imported by the QML files at run time, so CMake cannot see them through linking.
 ecm_find_qmlmodule(org.kde.kirigami REQUIRED)
 ecm_find_qmlmodule(org.kde.ki18n REQUIRED)

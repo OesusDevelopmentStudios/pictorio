@@ -71,8 +71,8 @@ columns, one argument per line when a call does not fit on one line.
 
 ### Empty line after a closing brace
 
-A closing brace `}` is always followed by an empty line, unless the next line is another closing brace
-or `else`:
+A closing brace `}` is always followed by an empty line, unless the next line is another closing brace,
+`else` or `catch`:
 
 ```cpp
 if (!fileInfo.exists())

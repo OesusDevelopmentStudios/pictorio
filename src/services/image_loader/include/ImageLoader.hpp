@@ -8,6 +8,7 @@
 #include <expected>
 
 #include <QByteArray>
+#include <QDateTime>
 #include <QImageIOHandler>
 #include <QSize>
 #include <QString>
@@ -33,6 +34,9 @@ struct ImageInfo
 
     // More than one frame, e.g. an animated GIF or WebP
     bool animated = false;
+
+    // When the photo was taken, from the EXIF data. Invalid if the file does not say.
+    QDateTime captureDate;
 };
 
 // Why an image could not be loaded. Use describeError() for a message that can be shown to the user.

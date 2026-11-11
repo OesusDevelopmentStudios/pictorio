@@ -17,8 +17,9 @@ ecm_add_test(utils/TestCommandLine.cpp
 )
 
 ecm_add_test(services/image_loader/TestImageLoader.cpp
-    LINK_LIBRARIES pictorio_image_loader Qt6::Test KF6::I18n
+    LINK_LIBRARIES pictorio_image_loader Qt6::Test KF6::I18n LibExiv2::LibExiv2
 )
+kde_target_enable_exceptions(TestImageLoader PRIVATE)  # exiv2 writes the test EXIF data
 
 ecm_add_test(services/viewer/TestViewer.cpp
     LINK_LIBRARIES pictorio_viewer Qt6::Test KF6::I18n

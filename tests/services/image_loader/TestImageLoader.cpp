@@ -14,6 +14,8 @@
 #include <QTemporaryDir>
 #include <QTest>
 
+#include <exiv2/exiv2.hpp>
+
 #include "ImageLoader.hpp"
 #include "ImageLoaderFactory.hpp"
 
@@ -82,6 +84,8 @@ private Q_SLOTS:
     void appliesExifOrientation();
     void detectsAnimation_data();
     void detectsAnimation();
+    void readsCaptureDate_data();
+    void readsCaptureDate();
 
     void reportsMissingFile();
     void reportsFolderAsNotAFile();
@@ -96,6 +100,7 @@ private:
     QString writeTestImage(const QString& fileName, const char* format, QSize storedSize);
     QString writeJpegWithExifOrientation(const QString& fileName, QSize storedSize, quint8 exifOrientation);
     QString writeFile(const QString& fileName, const QByteArray& content);
+    void writeExifTags(const QString& imagePath, const QList<std::pair<QString, QString>>& tags);
 
     QTemporaryDir m_temporaryFolder;
     std::unique_ptr<ImageLoader> m_imageLoader;
@@ -120,6 +125,7 @@ void TestImageLoader::readsSizeAndTypeOfPng()
     QCOMPARE(result->mimeType, QStringLiteral("image/png"));
     QCOMPARE(result->exifTransformation, QImageIOHandler::TransformationNone);
     QVERIFY(!result->animated);
+    QVERIFY(!result->captureDate.isValid());
 }
 
 void TestImageLoader::returnsAbsolutePath()
@@ -206,6 +212,49 @@ void TestImageLoader::detectsAnimation()
     QCOMPARE(result->mimeType, QStringLiteral("image/gif"));
     QCOMPARE(result->displaySize, QSize(1, 1));
     QCOMPARE(result->animated, expectedAnimated);
+}
+
+void TestImageLoader::readsCaptureDate_data()
+{
+    // EXIF values; an empty string leaves the tag out
+    QTest::addColumn<QString>("originalDate");
+    QTest::addColumn<QString>("digitizedDate");
+    QTest::addColumn<QString>("editDate");
+    QTest::addColumn<QDateTime>("expectedCaptureDate");
+
+    const QDateTime summerEvening(QDate(2024, 7, 14), QTime(18, 30, 5));
+    const QDateTime winterMorning(QDate(2023, 1, 2), QTime(8, 0, 0));
+
+    QTest::newRow("original") << QStringLiteral("2024:07:14 18:30:05") << QString() << QString() << summerEvening;
+    QTest::newRow("digitized only") << QString() << QStringLiteral("2024:07:14 18:30:05") << QString() << summerEvening;
+    QTest::newRow("original wins") << QStringLiteral("2024:07:14 18:30:05") << QStringLiteral("2023:01:02 08:00:00")
+                                   << QString() << summerEvening;
+    QTest::newRow("unset camera clock") << QStringLiteral("0000:00:00 00:00:00") << QString() << QString()
+                                        << QDateTime();
+    QTest::newRow("only an edit date") << QString() << QString() << QStringLiteral("2023:01:02 08:00:00")
+                                       << QDateTime();
+    QTest::newRow("unset original, digitized set")
+        << QStringLiteral("0000:00:00 00:00:00") << QStringLiteral("2023:01:02 08:00:00") << QString() << winterMorning;
+}
+
+void TestImageLoader::readsCaptureDate()
+{
+    QFETCH(QString, originalDate);
+    QFETCH(QString, digitizedDate);
+    QFETCH(QString, editDate);
+    QFETCH(QDateTime, expectedCaptureDate);
+    const QString imagePath = writeTestImage(QStringLiteral("dated.jpg"), "JPEG", QSize(10, 10));
+    writeExifTags(imagePath,
+                  {
+                      {QStringLiteral("Exif.Photo.DateTimeOriginal"), originalDate},
+                      {QStringLiteral("Exif.Photo.DateTimeDigitized"), digitizedDate},
+                      {QStringLiteral("Exif.Image.DateTime"), editDate},
+                  });
+
+    const auto result = m_imageLoader->loadInfo(imagePath);
+
+    QVERIFY(result.has_value());
+    QCOMPARE(result->captureDate, expectedCaptureDate);
 }
 
 void TestImageLoader::reportsMissingFile()
@@ -315,6 +364,23 @@ QString TestImageLoader::writeJpegWithExifOrientation(const QString& fileName, Q
     jpegData.insert(startOfImageMarkerLength, exifSegmentWithOrientation(exifOrientation));
 
     return writeFile(fileName, jpegData);
+}
+
+// Uses exiv2 to add the tags; tags with an empty value are left out.
+void TestImageLoader::writeExifTags(const QString& imagePath, const QList<std::pair<QString, QString>>& tags)
+{
+    const auto image = Exiv2::ImageFactory::open(QFile::encodeName(imagePath).toStdString());
+    image->readMetadata();
+    Exiv2::ExifData& exifData = image->exifData();
+    for (const auto& [key, value] : tags)
+    {
+        if (!value.isEmpty())
+        {
+            exifData[key.toStdString()] = value.toStdString();
+        }
+    }
+
+    image->writeMetadata();
 }
 
 QString TestImageLoader::writeFile(const QString& fileName, const QByteArray& content)

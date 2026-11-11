@@ -31,6 +31,30 @@ finish-args:
   - --filesystem=host:ro
 
 modules:
+  # Image metadata (the date a photo was taken). Not in the KDE runtime, so it is built here.
+  - name: exiv2
+    buildsystem: cmake-ninja
+    builddir: true
+    config-opts:
+      - -DCMAKE_BUILD_TYPE=Release
+      - -DBUILD_SHARED_LIBS=ON
+      - -DEXIV2_BUILD_EXIV2_COMMAND=OFF
+      - -DEXIV2_BUILD_SAMPLES=OFF
+      - -DEXIV2_BUILD_UNIT_TESTS=OFF
+      - -DEXIV2_BUILD_DOC=OFF
+      - -DEXIV2_ENABLE_XMP=OFF      # only EXIF is read
+      - -DEXIV2_ENABLE_VIDEO=OFF
+      - -DEXIV2_ENABLE_INIH=OFF     # only needed for a user config file with lens names
+      - -DEXIV2_ENABLE_NLS=OFF
+    sources:
+      - type: archive
+        url: https://github.com/Exiv2/exiv2/archive/refs/tags/v0.28.9.tar.gz
+        sha256: 700b76b97695b2fab4ef8c79619c68ae57d09e0c130724791cafbd39e0eb4aef
+    cleanup:
+      - /include
+      - /lib/cmake
+      - /lib/pkgconfig
+
   - name: pictorio
     buildsystem: cmake-ninja
     builddir: true

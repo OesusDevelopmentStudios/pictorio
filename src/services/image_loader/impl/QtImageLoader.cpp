@@ -12,6 +12,8 @@
 #include <QImageReader>
 #include <QMimeDatabase>
 
+#include "hlp/ExifCaptureDate.hpp"
+
 namespace
 {
 
@@ -97,6 +99,7 @@ std::expected<ImageInfo, ImageLoadError> QtImageLoader::loadInfo(const QString& 
     imageInfo.displaySize = applyTransformationToSize(storedSize, imageInfo.exifTransformation);
     imageInfo.mimeType = QMimeDatabase().mimeTypeForFile(imageInfo.filePath, QMimeDatabase::MatchContent).name();
     imageInfo.animated = reader.supportsAnimation() && reader.imageCount() > 1;
+    imageInfo.captureDate = readExifCaptureDate(imageInfo.filePath);
 
     return imageInfo;
 }
