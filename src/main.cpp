@@ -56,6 +56,8 @@ int main(int argc, char* argv[])
     QQmlApplicationEngine qmlEngine;
     KLocalization::setupLocalizedContext(&qmlEngine);  // makes KI18n.i18n*() work in QML
 
+    qmlEngine.setInitialProperties({{QStringLiteral("appManager"), QVariant::fromValue(&appManager)}});
+
     // The QML module URI is the application ID (see ecm_add_qml_module in src/CMakeLists.txt).
     qmlEngine.loadFromModule(pictorio::utils::applicationId, QStringLiteral("Main"));
 

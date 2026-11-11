@@ -17,3 +17,6 @@ target_link_libraries(pictorio_viewer PUBLIC
     pictorio_image_loader
     Qt6::Core
 )
+
+# Viewer is exposed to QML (app_manager/QmlForeignTypes.hpp); QML tools read its properties from these metatypes.
+qt_extract_metatypes(pictorio_viewer)

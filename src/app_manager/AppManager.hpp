@@ -8,6 +8,7 @@
 #include <memory>
 
 #include <QObject>
+#include <QtQmlIntegration/qqmlintegration.h>
 
 #include "Viewer.hpp"
 
@@ -18,6 +19,8 @@ namespace pictorio::app_manager
 class AppManager : public QObject
 {
     Q_OBJECT
+    QML_ELEMENT
+    QML_UNCREATABLE("Created in main.cpp")
 
     Q_PROPERTY(pictorio::viewer::Viewer* viewer READ viewer CONSTANT)
 

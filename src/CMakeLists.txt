@@ -39,10 +39,17 @@ target_sources(pictorio PRIVATE
     main.cpp
     app_manager/AppManager.hpp
     app_manager/AppManager.cpp
+    app_manager/QmlForeignTypes.hpp
+)
+
+# Qt's generated QML type registration includes the headers by file name only.
+target_include_directories(pictorio PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/app_manager
 )
 
 ecm_target_qml_sources(pictorio SOURCES
     qml/Main.qml
+    qml/ViewerPage.qml
 )
 
 target_link_libraries(pictorio PRIVATE

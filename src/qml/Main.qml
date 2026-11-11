@@ -8,21 +8,17 @@ import org.kde.ki18n
 Kirigami.ApplicationWindow {
     id: root
 
-    title: KI18n.i18nc("@title:window", "Pictorio")
+    required property AppManager appManager
+
+    title: appManager.viewer.hasImage
+        ? KI18n.i18nc("@title:window %1 is a file name", "%1 — Pictorio", appManager.viewer.fileName)
+        : KI18n.i18nc("@title:window", "Pictorio")
 
     // Kirigami grid units scale with the system font size.
     width: Kirigami.Units.gridUnit * 50
     height: Kirigami.Units.gridUnit * 35
 
-    pageStack.initialPage: Kirigami.Page {
-        title: KI18n.i18nc("@title", "Viewer")
-
-        Kirigami.PlaceholderMessage {
-            anchors.centerIn: parent
-            width: parent.width - Kirigami.Units.gridUnit * 4
-
-            icon.name: "image-x-generic"
-            text: KI18n.i18nc("@info:placeholder", "No image open")
-        }
+    pageStack.initialPage: ViewerPage {
+        viewer: root.appManager.viewer
     }
 }
