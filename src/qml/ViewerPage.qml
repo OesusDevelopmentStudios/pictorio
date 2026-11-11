@@ -1,6 +1,9 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // SPDX-FileCopyrightText: 2026 OesusDevelopmentStudios
 
+// Lets the image components below use the page's ids.
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import org.kde.kirigami as Kirigami
 import org.kde.ki18n
@@ -108,19 +111,16 @@ Kirigami.Page {
             width: page.viewTransform.displayedSize.width
             height: page.viewTransform.displayedSize.height
 
-            Image {
-                id: image
+            Loader {
+                id: imageLoader
 
                 anchors.centerIn: parent
                 width: page.viewTransform.imageSize.width * page.viewTransform.scale
                 height: page.viewTransform.imageSize.height * page.viewTransform.scale
                 rotation: page.viewTransform.rotationAngle
 
-                source: page.viewer.imageSource
-                autoTransform: true  // apply the EXIF orientation
-                asynchronous: true
-                smooth: true
-                mipmap: true
+                // Image shows only the first frame of an animation.
+                sourceComponent: page.viewer.imageAnimated ? animatedImage : stillImage
             }
         }
 
@@ -155,6 +155,27 @@ Kirigami.Page {
         }
     }
 
+    Component {
+        id: stillImage
+
+        Image {
+            source: page.viewer.imageSource
+            autoTransform: true  // apply the EXIF orientation
+            asynchronous: true
+            smooth: true
+            mipmap: true
+        }
+    }
+
+    Component {
+        id: animatedImage
+
+        AnimatedImage {
+            source: page.viewer.imageSource
+            smooth: true
+        }
+    }
+
     Kirigami.PlaceholderMessage {
         anchors.centerIn: parent
         width: parent.width - Kirigami.Units.gridUnit * 4
@@ -167,7 +188,7 @@ Kirigami.Page {
     Kirigami.PlaceholderMessage {
         anchors.centerIn: parent
         width: parent.width - Kirigami.Units.gridUnit * 4
-        visible: page.viewer.errorMessage.length > 0 || image.status === Image.Error
+        visible: page.viewer.errorMessage.length > 0 || (imageLoader.item as Image)?.status === Image.Error
 
         icon.name: "data-error"
         text: KI18n.i18nc("@info:placeholder %1 is a file name", "Cannot open %1", page.viewer.fileName)

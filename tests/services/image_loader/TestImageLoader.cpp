@@ -40,6 +40,27 @@ QByteArray exifSegmentWithOrientation(quint8 orientation)
     return segment;
 }
 
+// A 1 x 1 GIF with the given number of frames. Built by hand because Qt cannot write GIF files.
+QByteArray gifWithFrames(int frameCount)
+{
+    QByteArray gif;
+    gif += QByteArray::fromHex("474946383961");  // "GIF89a"
+    gif += QByteArray::fromHex("01000100");      // width 1, height 1
+    gif += QByteArray::fromHex("800000");        // global color table with 2 colors follows
+    gif += QByteArray::fromHex("000000FFFFFF");  // the colors: black, white
+    for (int frameIndex = 0; frameIndex < frameCount; ++frameIndex)
+    {
+        gif += QByteArray::fromHex("21F904000A0000");      // graphic control extension: show for 0.1 s
+        gif += QByteArray::fromHex("00");                  //   end of extension
+        gif += QByteArray::fromHex("2C0000000001000100");  // image descriptor: 1 x 1 at position 0, 0
+        gif += QByteArray::fromHex("00");                  //   no local color table
+        gif += QByteArray::fromHex("0202440100");          // LZW data: one black pixel
+    }
+
+    gif += QByteArray::fromHex("3B");  // end of file
+    return gif;
+}
+
 }  // namespace
 
 namespace pictorio::image_loader
@@ -59,6 +80,8 @@ private Q_SLOTS:
     void detectsTypeFromContentWhenExtensionIsMissing();
     void appliesExifOrientation_data();
     void appliesExifOrientation();
+    void detectsAnimation_data();
+    void detectsAnimation();
 
     void reportsMissingFile();
     void reportsFolderAsNotAFile();
@@ -96,6 +119,7 @@ void TestImageLoader::readsSizeAndTypeOfPng()
     QCOMPARE(result->displaySize, QSize(40, 20));
     QCOMPARE(result->mimeType, QStringLiteral("image/png"));
     QCOMPARE(result->exifTransformation, QImageIOHandler::TransformationNone);
+    QVERIFY(!result->animated);
 }
 
 void TestImageLoader::returnsAbsolutePath()
@@ -159,6 +183,29 @@ void TestImageLoader::appliesExifOrientation()
     QVERIFY(result.has_value());
     QCOMPARE(int(result->exifTransformation), expectedTransformation);
     QCOMPARE(result->displaySize, expectedDisplaySize);
+}
+
+void TestImageLoader::detectsAnimation_data()
+{
+    QTest::addColumn<int>("frameCount");
+    QTest::addColumn<bool>("expectedAnimated");
+
+    QTest::newRow("single frame") << 1 << false;
+    QTest::newRow("two frames") << 2 << true;
+}
+
+void TestImageLoader::detectsAnimation()
+{
+    QFETCH(int, frameCount);
+    QFETCH(bool, expectedAnimated);
+    const QString imagePath = writeFile(QStringLiteral("frames.gif"), gifWithFrames(frameCount));
+
+    const auto result = m_imageLoader->loadInfo(imagePath);
+
+    QVERIFY(result.has_value());
+    QCOMPARE(result->mimeType, QStringLiteral("image/gif"));
+    QCOMPARE(result->displaySize, QSize(1, 1));
+    QCOMPARE(result->animated, expectedAnimated);
 }
 
 void TestImageLoader::reportsMissingFile()

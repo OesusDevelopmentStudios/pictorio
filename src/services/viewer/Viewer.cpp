@@ -56,6 +56,11 @@ QSize Viewer::imageDisplaySize() const
     return hasImage() ? m_currentImage->displaySize : QSize();
 }
 
+bool Viewer::imageAnimated() const
+{
+    return hasImage() && m_currentImage->animated;
+}
+
 QString Viewer::errorMessage() const
 {
     return m_errorMessage;

@@ -30,6 +30,9 @@ struct ImageInfo
 
     // Detected from the file content, not from the file name. Example: "image/jpeg"
     QString mimeType;
+
+    // More than one frame, e.g. an animated GIF or WebP
+    bool animated = false;
 };
 
 // Why an image could not be loaded. Use describeError() for a message that can be shown to the user.

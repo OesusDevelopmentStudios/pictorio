@@ -27,6 +27,7 @@ class Viewer : public QObject
     Q_PROPERTY(QString fileName READ fileName NOTIFY currentImageChanged)
     Q_PROPERTY(QUrl imageSource READ imageSource NOTIFY currentImageChanged)
     Q_PROPERTY(QSize imageDisplaySize READ imageDisplaySize NOTIFY currentImageChanged)
+    Q_PROPERTY(bool imageAnimated READ imageAnimated NOTIFY currentImageChanged)
     Q_PROPERTY(QString errorMessage READ errorMessage NOTIFY currentImageChanged)
 
 public:
@@ -39,6 +40,7 @@ public:
     QString fileName() const;  // also set when opening failed, for the error message
     QUrl imageSource() const;
     QSize imageDisplaySize() const;
+    bool imageAnimated() const;
     QString errorMessage() const;  // empty when the image opened
 
 Q_SIGNALS:

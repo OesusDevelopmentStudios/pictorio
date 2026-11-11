@@ -96,6 +96,7 @@ std::expected<ImageInfo, ImageLoadError> QtImageLoader::loadInfo(const QString& 
     imageInfo.exifTransformation = reader.transformation();
     imageInfo.displaySize = applyTransformationToSize(storedSize, imageInfo.exifTransformation);
     imageInfo.mimeType = QMimeDatabase().mimeTypeForFile(imageInfo.filePath, QMimeDatabase::MatchContent).name();
+    imageInfo.animated = reader.supportsAnimation() && reader.imageCount() > 1;
 
     return imageInfo;
 }

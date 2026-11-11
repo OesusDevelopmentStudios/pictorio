@@ -57,6 +57,7 @@ private Q_SLOTS:
 
     void startsWithoutImage();
     void opensImage();
+    void reportsAnimatedImage();
     void showsErrorWhenImageCannotBeOpened();
     void clearsErrorWhenNextImageOpens();
     void notifiesOncePerOpen();
@@ -96,7 +97,19 @@ void TestViewer::opensImage()
     QCOMPARE(m_viewer->fileName(), QStringLiteral("beach.jpg"));
     QCOMPARE(m_viewer->imageSource(), QUrl(QStringLiteral("file:///photos/beach.jpg")));
     QCOMPARE(m_viewer->imageDisplaySize(), QSize(4000, 3000));
+    QVERIFY(!m_viewer->imageAnimated());
     QVERIFY(m_viewer->errorMessage().isEmpty());
+}
+
+void TestViewer::reportsAnimatedImage()
+{
+    ImageInfo animation = landscapePhoto();
+    animation.animated = true;
+    m_imageLoader->nextResult = animation;
+
+    m_viewer->openImage(QStringLiteral("/photos/waves.gif"));
+
+    QVERIFY(m_viewer->imageAnimated());
 }
 
 void TestViewer::showsErrorWhenImageCannotBeOpened()
