@@ -1,2 +1,72 @@
-# pictorio
-Manage your images in an organised way
+# Pictorio
+
+Manage your images in an organised way.
+
+Pictorio is an image viewer and photo library for KDE Plasma.
+
+- **On its own** it is a simple image viewer: open an image from Dolphin, zoom, rotate, step through
+  the folder, run a slideshow.
+- **Connected to a [pictorio-db](https://github.com/OesusDevelopmentStudios/pictorio-db) server**
+  it becomes a tag-based photo library: search by tags, browse a thumbnail grid, edit tags, upload
+  photos.
+
+> **Status:** early development. The application currently opens an empty window.
+
+## Building
+
+### Dependencies
+
+| Dependency | Minimum version |
+|---|---|
+| CMake | 3.25 |
+| C++23 compiler (GCC or Clang) | |
+| Qt (Core, Gui, Qml, Quick, QuickControls2, Widgets, Test) | 6.8 |
+| KDE Frameworks (Extra CMake Modules, Kirigami, KI18n, KCoreAddons) | 6.21 |
+| KDE desktop style for Qt Quick (qqc2-desktop-style), needed at run time | |
+
+On Fedora:
+
+```sh
+sudo dnf install cmake gcc-c++ extra-cmake-modules \
+    qt6-qtbase-devel qt6-qtdeclarative-devel \
+    kf6-kirigami-devel kf6-ki18n-devel kf6-kcoreaddons-devel \
+    kf6-qqc2-desktop-style
+```
+
+### Build and run
+
+```sh
+cmake -B build
+cmake --build build
+./build/bin/pictorio
+```
+
+Build options:
+
+| Option | Default | Meaning |
+|---|---|---|
+| `BUILD_TESTING` | `ON` | Build the unit tests |
+| `PICTORIO_WARNINGS_AS_ERRORS` | `ON` | Treat compiler warnings as errors. Turn off for packaging |
+
+Example: `cmake -B build -DBUILD_TESTING=OFF -DPICTORIO_WARNINGS_AS_ERRORS=OFF`
+
+### Tests
+
+```sh
+ctest --test-dir build --output-on-failure
+```
+
+Check the QML files with Qt's linter:
+
+```sh
+cmake --build build --target pictorio_qmllint
+```
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the code layout and coding style.
+
+## License
+
+Pictorio is free software, licensed under the
+[GNU General Public License, version 3 or later](LICENSE) (`GPL-3.0-or-later`).
