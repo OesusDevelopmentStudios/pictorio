@@ -29,7 +29,7 @@ add_executable(pictorio)
 # The executable is also a QML module: QML files are compiled into it, and main.cpp loads them with
 # loadFromModule(). The URI is the app ID. It must differ from the target name, because Qt creates a
 # folder named after the URI next to the executable (a URI "pictorio" would collide with bin/pictorio).
-ecm_add_qml_module(pictorio URI io.github.OesusDevelopmentStudios.Pictorio)
+ecm_add_qml_module(pictorio URI io.github.oesusdevelopmentstudios.pictorio)
 
 target_sources(pictorio PRIVATE
     main.cpp

@@ -7,7 +7,7 @@ App description shown by software centres (Discover, Flathub). Its license (CC0)
 application's license, so that app stores may redistribute this text freely.
 -->
 <component type="desktop-application">
-  <id>io.github.OesusDevelopmentStudios.Pictorio</id>
+  <id>io.github.oesusdevelopmentstudios.pictorio</id>
   <metadata_license>CC0-1.0</metadata_license>
   <project_license>GPL-3.0-or-later</project_license>
 
@@ -35,7 +35,7 @@ application's license, so that app stores may redistribute this text freely.
     </ul>
   </description>
 
-  <launchable type="desktop-id">io.github.OesusDevelopmentStudios.Pictorio.desktop</launchable>
+  <launchable type="desktop-id">io.github.oesusdevelopmentstudios.pictorio.desktop</launchable>
   <provides>
     <binary>pictorio</binary>
   </provides>

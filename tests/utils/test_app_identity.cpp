@@ -54,12 +54,12 @@ void TestAppIdentity::registersProjectVersion()
 void TestAppIdentity::usesApplicationIdAsDesktopFileName()
 {
     QCOMPARE(KAboutData::applicationData().desktopFileName(),
-             QStringLiteral("io.github.OesusDevelopmentStudios.Pictorio"));
+             QStringLiteral("io.github.oesusdevelopmentstudios.pictorio"));
 }
 
 void TestAppIdentity::usesOwnOrganizationDomain()
 {
-    QCOMPARE(KAboutData::applicationData().organizationDomain(), QStringLiteral("OesusDevelopmentStudios.github.io"));
+    QCOMPARE(KAboutData::applicationData().organizationDomain(), QStringLiteral("oesusdevelopmentstudios.github.io"));
 }
 
 void TestAppIdentity::declaresGplVersion3OrLater()
