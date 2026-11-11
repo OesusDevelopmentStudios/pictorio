@@ -1,0 +1,37 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# SPDX-FileCopyrightText: 2026 OesusDevelopmentStudios
+#
+# Project formatting rules: Allman braces, 4-space indent, max 120 columns.
+# Run: clang-format -i <files>
+
+BasedOnStyle: LLVM
+
+# Braces on their own line (Allman style)
+BreakBeforeBraces: Allman
+IndentWidth: 4
+TabWidth: 4
+UseTab: Never
+
+# Maximum line length
+ColumnLimit: 120
+
+# `public:` / `private:` at the same column as `class`
+AccessModifierOffset: -4
+
+# Namespace bodies are not indented; closing brace gets `}  // namespace pictorio::name`
+NamespaceIndentation: None
+FixNamespaceComments: true
+SpacesBeforeTrailingComments: 2
+
+# Readability: no one-line functions, ifs or loops
+AllowShortFunctionsOnASingleLine: None
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLoopsOnASingleLine: false
+AllowShortBlocksOnASingleLine: Never
+
+PointerAlignment: Left
+
+# Includes are grouped by hand, one block per group, in this order: own header, standard library,
+# external libraries, common helpers, local files. clang-format only sorts inside a block.
+IncludeBlocks: Preserve
+SortIncludes: CaseSensitive

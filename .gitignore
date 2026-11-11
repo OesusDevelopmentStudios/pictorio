@@ -1,0 +1,13 @@
+# Build output
+build/
+build-*/
+
+# Flatpak builder state
+.flatpak-builder/
+
+# clangd index
+.cache/
+
+# Editor settings
+.vscode/
+*.user
