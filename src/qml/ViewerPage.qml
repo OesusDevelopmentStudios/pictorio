@@ -5,6 +5,7 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
+import QtQuick.Controls as Controls
 import org.kde.kirigami as Kirigami
 import org.kde.ki18n
 
@@ -59,16 +60,26 @@ Kirigami.Page {
             text: KI18n.i18nc("@action:intoolbar", "Slideshow")
             enabled: page.viewer.hasImage
 
+            // The order of the last slideshow is checked; F5 starts a slideshow in that order.
             Kirigami.Action {
                 text: KI18n.i18nc("@action:inmenu Slideshow order", "By Name")
+                checkable: true
+                checked: page.slideshow.order === Slideshow.Order.ByName
+                Controls.ActionGroup.group: slideshowOrderGroup
                 onTriggered: page.slideshow.start(Slideshow.Order.ByName)
             }
             Kirigami.Action {
                 text: KI18n.i18nc("@action:inmenu Slideshow order", "By Date Taken")
+                checkable: true
+                checked: page.slideshow.order === Slideshow.Order.ByDate
+                Controls.ActionGroup.group: slideshowOrderGroup
                 onTriggered: page.slideshow.start(Slideshow.Order.ByDate)
             }
             Kirigami.Action {
                 text: KI18n.i18nc("@action:inmenu Slideshow order", "In Random Order")
+                checkable: true
+                checked: page.slideshow.order === Slideshow.Order.Random
+                Controls.ActionGroup.group: slideshowOrderGroup
                 onTriggered: page.slideshow.start(Slideshow.Order.Random)
             }
         },
@@ -135,6 +146,17 @@ Kirigami.Page {
 
     function zoomAroundCenter(zoomAction: var) {
         zoomAround(Qt.point(flickable.width / 2, flickable.height / 2), zoomAction);
+    }
+
+    // Exclusive, so choosing the checked order again keeps it checked.
+    Controls.ActionGroup {
+        id: slideshowOrderGroup
+    }
+
+    Shortcut {
+        sequence: "F5"
+        enabled: page.viewer.hasImage && !page.presenting
+        onActivated: page.slideshow.start(page.slideshow.order)
     }
 
     Shortcut {

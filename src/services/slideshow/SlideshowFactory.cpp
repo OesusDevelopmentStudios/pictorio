@@ -8,9 +8,9 @@
 namespace pictorio::slideshow
 {
 
-std::unique_ptr<Slideshow> createSlideshow(navigator::Navigator* navigator)
+std::unique_ptr<Slideshow> createSlideshow(navigator::Navigator* navigator, settings::Settings* settings)
 {
-    return std::make_unique<Slideshow>(navigator);
+    return std::make_unique<Slideshow>(navigator, settings);
 }
 
 }  // namespace pictorio::slideshow

@@ -11,6 +11,7 @@
 #include <QtQmlIntegration/qqmlintegration.h>
 
 #include "Navigator.hpp"
+#include "Settings.hpp"
 #include "Slideshow.hpp"
 #include "ViewTransform.hpp"
 #include "Viewer.hpp"
@@ -40,10 +41,11 @@ public:
     slideshow::Slideshow* slideshow() const;
 
 private:
+    std::unique_ptr<settings::Settings> m_settings;
     std::unique_ptr<viewer::Viewer> m_viewer;
     std::unique_ptr<view_transform::ViewTransform> m_viewTransform;
     std::unique_ptr<navigator::Navigator> m_navigator;
-    std::unique_ptr<slideshow::Slideshow> m_slideshow;  // uses m_navigator, so declared after it
+    std::unique_ptr<slideshow::Slideshow> m_slideshow;  // uses m_navigator and m_settings, so declared after them
 };
 
 }  // namespace pictorio::app_manager

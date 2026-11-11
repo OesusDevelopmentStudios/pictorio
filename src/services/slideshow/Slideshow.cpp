@@ -6,7 +6,9 @@
 #include "Slideshow.hpp"
 
 #include <algorithm>
+#include <array>
 #include <chrono>
+#include <utility>
 
 #include <QRandomGenerator>
 
@@ -32,16 +34,39 @@ Sorting sortingFor(Slideshow::Order order)
     return {};
 }
 
+// How each order is written in the settings
+constexpr std::array<std::pair<Slideshow::Order, const char*>, 3> orderNames{{
+    {Slideshow::Order::ByName, "name"},
+    {Slideshow::Order::ByDate, "date"},
+    {Slideshow::Order::Random, "random"},
+}};
+
+QString nameOf(Slideshow::Order order)
+{
+    const auto entry = std::ranges::find(orderNames, order, &std::pair<Slideshow::Order, const char*>::first);
+    return QString::fromLatin1(entry->second);
+}
+
+// Unknown names (e.g. from a newer version) give the default order.
+Slideshow::Order orderNamed(const QString& name)
+{
+    const auto entry = std::ranges::find_if(
+        orderNames, [&](const auto& orderName) { return name == QLatin1StringView(orderName.second); });
+    return entry != orderNames.end() ? entry->first : Slideshow::Order::ByName;
+}
+
 }  // namespace
 
 namespace pictorio::slideshow
 {
 
-Slideshow::Slideshow(navigator::Navigator* navigator, QObject* parent)
+Slideshow::Slideshow(navigator::Navigator* navigator, settings::Settings* settings, QObject* parent)
     : QObject(parent)
     , m_navigator(navigator)
+    , m_settings(settings)
+    , m_order(orderNamed(m_settings->slideshowOrder().value_or(QString())))
 {
-    m_timer.setInterval(std::chrono::seconds(defaultIntervalSeconds));
+    applyIntervalSeconds(m_settings->slideshowIntervalSeconds().value_or(defaultIntervalSeconds));
     connect(&m_timer, &QTimer::timeout, this, &Slideshow::showNextImage);
     connect(m_navigator, &navigator::Navigator::imageRequested, this, &Slideshow::restartIntervalIfShowing);
 }
@@ -50,6 +75,13 @@ Slideshow::~Slideshow() = default;
 
 void Slideshow::start(Order order)
 {
+    if (order != m_order)
+    {
+        m_order = order;
+        m_settings->setSlideshowOrder(nameOf(order));
+        Q_EMIT orderChanged();
+    }
+
     m_navigator->setSorting(sortingFor(order));
     m_navigator->setWrapAround(true);
     m_running = true;
@@ -110,14 +142,24 @@ int Slideshow::intervalSeconds() const
 
 void Slideshow::setIntervalSeconds(int intervalSeconds)
 {
-    const int limitedSeconds = std::clamp(intervalSeconds, minimumIntervalSeconds, maximumIntervalSeconds);
-    if (limitedSeconds == this->intervalSeconds())
+    const int previousSeconds = this->intervalSeconds();
+    applyIntervalSeconds(intervalSeconds);
+    if (this->intervalSeconds() != previousSeconds)
     {
-        return;
+        m_settings->setSlideshowIntervalSeconds(this->intervalSeconds());
+        Q_EMIT intervalSecondsChanged();
     }
+}
 
+Slideshow::Order Slideshow::order() const
+{
+    return m_order;
+}
+
+void Slideshow::applyIntervalSeconds(int intervalSeconds)
+{
+    const int limitedSeconds = std::clamp(intervalSeconds, minimumIntervalSeconds, maximumIntervalSeconds);
     m_timer.setInterval(std::chrono::seconds(limitedSeconds));  // takes effect from the next image
-    Q_EMIT intervalSecondsChanged();
 }
 
 int Slideshow::minimumIntervalSecondsForQml() const

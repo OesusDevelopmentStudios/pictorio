@@ -19,6 +19,7 @@ namespace
 using pictorio::folder_scanner::FolderScanner;
 using pictorio::folder_scanner::Sorting;
 using pictorio::folder_scanner::SortOrder;
+using pictorio::settings::Settings;
 
 const QStringList folderImages{
     QStringLiteral("/photos/a.jpg"),
@@ -37,6 +38,34 @@ public:
     }
 
     mutable std::atomic<SortOrder> lastSortOrder = SortOrder::Name;
+};
+
+// Keeps the settings in memory.
+class FakeSettings : public Settings
+{
+public:
+    std::optional<int> slideshowIntervalSeconds() const override
+    {
+        return intervalSeconds;
+    }
+
+    void setSlideshowIntervalSeconds(int newIntervalSeconds) override
+    {
+        intervalSeconds = newIntervalSeconds;
+    }
+
+    std::optional<QString> slideshowOrder() const override
+    {
+        return order;
+    }
+
+    void setSlideshowOrder(const QString& newOrder) override
+    {
+        order = newOrder;
+    }
+
+    std::optional<int> intervalSeconds;
+    std::optional<QString> order;
 };
 
 // The shortest interval; tests that wait for the timer take about this long.
@@ -63,12 +92,20 @@ private Q_SLOTS:
     void advancesAfterInterval();
     void doesNotAdvanceWhilePaused();
 
+    void restoresIntervalAndOrder();
+    void limitsRestoredInterval();
+    void usesNameOrderForUnknownStoredOrder();
+    void savesIntervalWhenChanged();
+    void savesOrderWhenStarted();
+
 private:
+    void recreateSlideshow();
     void openImageAndWaitForListing(const QString& filePath);
     void waitForListing();
 
     std::unique_ptr<navigator::Navigator> m_navigator;
     FakeFolderScanner* m_folderScanner = nullptr;  // owned by m_navigator
+    FakeSettings m_settings;
     std::unique_ptr<Slideshow> m_slideshow;
 };
 
@@ -78,7 +115,15 @@ void TestSlideshow::init()
     auto folderScanner = std::make_unique<FakeFolderScanner>();
     m_folderScanner = folderScanner.get();
     m_navigator = navigator::createNavigator(std::move(folderScanner));
-    m_slideshow = createSlideshow(m_navigator.get());
+    m_settings = FakeSettings();
+    recreateSlideshow();
+}
+
+// A new slideshow reads the settings, like one created when the application starts.
+void TestSlideshow::recreateSlideshow()
+{
+    m_slideshow.reset();
+    m_slideshow = slideshow::createSlideshow(m_navigator.get(), &m_settings);
 }
 
 void TestSlideshow::startsStopped()
@@ -86,6 +131,7 @@ void TestSlideshow::startsStopped()
     QVERIFY(!m_slideshow->isRunning());
     QVERIFY(!m_slideshow->isPaused());
     QCOMPARE(m_slideshow->intervalSeconds(), Slideshow::defaultIntervalSeconds);
+    QCOMPARE(m_slideshow->order(), Slideshow::Order::ByName);
 }
 
 void TestSlideshow::startUsesChosenOrderAndWrapsAround_data()
@@ -172,6 +218,53 @@ void TestSlideshow::doesNotAdvanceWhilePaused()
     QTest::qWait(oneSecondInMilliseconds + oneSecondInMilliseconds / 2);
 
     QCOMPARE(m_navigator->currentIndex(), 0);
+}
+
+void TestSlideshow::restoresIntervalAndOrder()
+{
+    m_settings.intervalSeconds = 12;
+    m_settings.order = QStringLiteral("date");
+
+    recreateSlideshow();
+
+    QCOMPARE(m_slideshow->intervalSeconds(), 12);
+    QCOMPARE(m_slideshow->order(), Slideshow::Order::ByDate);
+}
+
+void TestSlideshow::limitsRestoredInterval()
+{
+    m_settings.intervalSeconds = 0;
+
+    recreateSlideshow();
+
+    QCOMPARE(m_slideshow->intervalSeconds(), Slideshow::minimumIntervalSeconds);
+}
+
+void TestSlideshow::usesNameOrderForUnknownStoredOrder()
+{
+    m_settings.order = QStringLiteral("sideways");
+
+    recreateSlideshow();
+
+    QCOMPARE(m_slideshow->order(), Slideshow::Order::ByName);
+}
+
+void TestSlideshow::savesIntervalWhenChanged()
+{
+    m_slideshow->setIntervalSeconds(9);
+
+    QCOMPARE(m_settings.intervalSeconds, 9);
+}
+
+void TestSlideshow::savesOrderWhenStarted()
+{
+    QSignalSpy orderSpy(m_slideshow.get(), &Slideshow::orderChanged);
+
+    m_slideshow->start(Slideshow::Order::Random);
+
+    QCOMPARE(m_slideshow->order(), Slideshow::Order::Random);
+    QCOMPARE(m_settings.order, QStringLiteral("random"));
+    QCOMPARE(orderSpy.count(), 1);
 }
 
 void TestSlideshow::openImageAndWaitForListing(const QString& filePath)

@@ -116,13 +116,25 @@ Item {
                 text: KI18n.i18nc("@label:spinbox Time each image is shown", "Interval:")
             }
 
+            // Plain digits, so the value can also be typed; the unit is a separate label.
             Controls.SpinBox {
+                id: intervalSpinBox
+
                 from: controls.slideshow.minimumIntervalSeconds
                 to: controls.slideshow.maximumIntervalSeconds
                 value: controls.slideshow.intervalSeconds
-                textFromValue: (value, locale) => KI18n.i18ncp("@item:valuesuffix Slideshow interval",
-                                                              "%1 second", "%1 seconds", value)
+                editable: true
+                validator: IntValidator {
+                    bottom: intervalSpinBox.from
+                    top: intervalSpinBox.to
+                }
+                textFromValue: (value, locale) => value.toString()
+                valueFromText: (text, locale) => parseInt(text, 10)
                 onValueModified: controls.slideshow.intervalSeconds = value
+            }
+
+            Controls.Label {
+                text: KI18n.i18ncp("@label Unit of the slideshow interval", "second", "seconds", intervalSpinBox.value)
             }
 
             Kirigami.Separator {

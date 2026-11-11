@@ -8,6 +8,7 @@
 #include "FolderScannerFactory.hpp"
 #include "ImageLoaderFactory.hpp"
 #include "NavigatorFactory.hpp"
+#include "SettingsFactory.hpp"
 #include "SlideshowFactory.hpp"
 #include "ViewTransformFactory.hpp"
 #include "ViewerFactory.hpp"
@@ -17,10 +18,11 @@ namespace pictorio::app_manager
 
 AppManager::AppManager(QObject* parent)
     : QObject(parent)
+    , m_settings(settings::createSettings())
     , m_viewer(viewer::createViewer(image_loader::createImageLoader()))
     , m_viewTransform(view_transform::createViewTransform())
     , m_navigator(navigator::createNavigator(folder_scanner::createFolderScanner(image_loader::createImageLoader())))
-    , m_slideshow(slideshow::createSlideshow(m_navigator.get()))
+    , m_slideshow(slideshow::createSlideshow(m_navigator.get(), m_settings.get()))
 {
     connect(m_navigator.get(), &navigator::Navigator::imageRequested, m_viewer.get(), &viewer::Viewer::openImage);
 

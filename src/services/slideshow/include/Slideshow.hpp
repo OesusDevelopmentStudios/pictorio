@@ -9,6 +9,7 @@
 #include <QTimer>
 
 #include "Navigator.hpp"
+#include "Settings.hpp"
 
 namespace pictorio::slideshow
 {
@@ -16,6 +17,7 @@ namespace pictorio::slideshow
 // Shows the images of the current folder one after another, in the chosen order, starting with the
 // image on screen and starting over after the last one. Moves through the folder with the navigator,
 // so moving by hand works during a slideshow too; every image change restarts the interval.
+// The interval and the last used order are kept in the settings.
 class Slideshow : public QObject
 {
     Q_OBJECT
@@ -23,6 +25,7 @@ class Slideshow : public QObject
     Q_PROPERTY(bool running READ isRunning NOTIFY stateChanged)
     Q_PROPERTY(bool paused READ isPaused NOTIFY stateChanged)
     Q_PROPERTY(int intervalSeconds READ intervalSeconds WRITE setIntervalSeconds NOTIFY intervalSecondsChanged)
+    Q_PROPERTY(Order order READ order NOTIFY orderChanged)
     Q_PROPERTY(int minimumIntervalSeconds READ minimumIntervalSecondsForQml CONSTANT)
     Q_PROPERTY(int maximumIntervalSeconds READ maximumIntervalSecondsForQml CONSTANT)
 
@@ -40,8 +43,8 @@ public:
     static constexpr int maximumIntervalSeconds = 3600;
     static constexpr int defaultIntervalSeconds = 5;
 
-    // The navigator is not owned and must outlive the slideshow.
-    explicit Slideshow(navigator::Navigator* navigator, QObject* parent = nullptr);
+    // The navigator and the settings are not owned and must outlive the slideshow.
+    Slideshow(navigator::Navigator* navigator, settings::Settings* settings, QObject* parent = nullptr);
     ~Slideshow() override;
 
     Q_INVOKABLE void start(Order order);
@@ -53,21 +56,26 @@ public:
     bool isPaused() const;
     int intervalSeconds() const;
     void setIntervalSeconds(int intervalSeconds);  // limited to minimum..maximum
+    Order order() const;                           // of the running or the last slideshow
 
 Q_SIGNALS:
     void stateChanged();
     void intervalSecondsChanged();
+    void orderChanged();
 
 private:
     // The limits for QML, which cannot read static members
     int minimumIntervalSecondsForQml() const;
     int maximumIntervalSecondsForQml() const;
 
+    void applyIntervalSeconds(int intervalSeconds);
     void showNextImage();
     void restartIntervalIfShowing();
 
     navigator::Navigator* m_navigator;
+    settings::Settings* m_settings;
     QTimer m_timer;
+    Order m_order = Order::ByName;
     bool m_running = false;
     bool m_paused = false;
 };

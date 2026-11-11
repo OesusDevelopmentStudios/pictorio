@@ -15,6 +15,7 @@ target_include_directories(pictorio_slideshow PUBLIC
 
 target_link_libraries(pictorio_slideshow PUBLIC
     pictorio_navigator
+    pictorio_settings
     Qt6::Core
 )
 
