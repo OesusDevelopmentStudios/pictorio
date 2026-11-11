@@ -13,7 +13,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 # Oldest versions we support. The KDE Flatpak runtime we target provides newer ones.
 set(QT_MIN_VERSION "6.8.0")
-set(KF_MIN_VERSION "6.10.0")
+set(KF_MIN_VERSION "6.21.0")  # 6.21: KI18n.i18n*() in QML, checkable by qmllint
 
 # Extra CMake Modules: standard KDE install paths, compiler warnings and build settings.
 find_package(ECM ${KF_MIN_VERSION} REQUIRED NO_MODULE)
@@ -22,6 +22,8 @@ list(APPEND CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
 include(KDEInstallDirs)
 include(KDECMakeSettings)
 include(KDECompilerSettings NO_POLICY_SCOPE)
+include(ECMQmlModule)       # ecm_add_qml_module(): QML files compiled into the executable
+include(ECMFindQmlModule)   # ecm_find_qmlmodule(): checks QML modules needed at run time
 include(FeatureSummary)
 
 # Warnings are errors during development. Packaging (e.g. Flatpak) turns this off, because a newer
@@ -37,6 +39,7 @@ find_package(Qt6 ${QT_MIN_VERSION} REQUIRED COMPONENTS
     Qml
     Quick
     QuickControls2
+    Widgets      # QApplication, required by the KDE desktop style for Qt Quick Controls
 )
 
 find_package(KF6 ${KF_MIN_VERSION} REQUIRED COMPONENTS
@@ -44,5 +47,11 @@ find_package(KF6 ${KF_MIN_VERSION} REQUIRED COMPONENTS
     I18n         # translations
     CoreAddons   # application metadata (KAboutData)
 )
+
+# Imported by the QML files at run time, so CMake cannot see them through linking.
+ecm_find_qmlmodule(org.kde.kirigami REQUIRED)
+ecm_find_qmlmodule(org.kde.ki18n REQUIRED)
+
+add_subdirectory(src)
 
 feature_summary(WHAT ALL INCLUDE_QUIET_PACKAGES FATAL_ON_MISSING_REQUIRED_PACKAGES)

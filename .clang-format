@@ -31,6 +31,10 @@ AllowShortBlocksOnASingleLine: Never
 
 PointerAlignment: Left
 
+# If a call or declaration does not fit on one line, put each argument / parameter on its own line
+BinPackArguments: false
+BinPackParameters: OnePerLine
+
 # Includes are grouped by hand, one block per group, in this order: own header, standard library,
 # external libraries, common helpers, local files. clang-format only sorts inside a block.
 IncludeBlocks: Preserve
