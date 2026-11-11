@@ -11,6 +11,10 @@ set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+# Writes compile_commands.json into the build folder, so editors (clangd, cpptools) know the exact
+# include paths and flags.
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 # Oldest versions we support. The KDE Flatpak runtime we target provides newer ones.
 set(QT_MIN_VERSION "6.8.0")
 set(KF_MIN_VERSION "6.21.0")  # 6.21: KI18n.i18n*() in QML, checkable by qmllint
