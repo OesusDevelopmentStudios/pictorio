@@ -3,6 +3,7 @@
  * SPDX-FileCopyrightText: 2026 OesusDevelopmentStudios
  */
 
+#include <algorithm>
 #include <atomic>
 #include <memory>
 
@@ -19,24 +20,34 @@ namespace
 
 using pictorio::folder_scanner::FolderScanner;
 using pictorio::folder_scanner::Sorting;
+using pictorio::folder_scanner::SortOrder;
 
 constexpr int openGate = 1000;
 
-// Returns the listing the test set for a folder. Each listing first passes the gate, so a test can
-// hold listings back and decide when they finish. Called from a background thread.
+// Returns the listing the test set for a folder, reversed for date order so that a changed order is
+// visible. Each listing first passes the gate, so a test can hold listings back and decide when they
+// finish. Called from a background thread.
 class FakeFolderScanner : public FolderScanner
 {
 public:
-    QStringList listImages(const QString& folderPath, const Sorting& /*sorting*/) const override
+    QStringList listImages(const QString& folderPath, const Sorting& sorting) const override
     {
         gate.acquire();
         ++listingCount;
-        return listings.value(folderPath);
+        lastSortOrder = sorting.order;
+        QStringList imagePaths = listings.value(folderPath);
+        if (sorting.order == SortOrder::Date)
+        {
+            std::ranges::reverse(imagePaths);
+        }
+
+        return imagePaths;
     }
 
     mutable QSemaphore gate{openGate};
     QHash<QString, QStringList> listings;  // set up before any listing starts
     mutable std::atomic<int> listingCount = 0;
+    mutable std::atomic<SortOrder> lastSortOrder = SortOrder::Name;
 };
 
 const QString holidayFolder = QStringLiteral("/photos/holiday");
@@ -48,6 +59,9 @@ const QStringList holidayImages{
 
 const QString petsFolder = QStringLiteral("/photos/pets");
 const QStringList petImages{QStringLiteral("/photos/pets/cat.jpg"), QStringLiteral("/photos/pets/dog.jpg")};
+
+const QString singleImageFolder = QStringLiteral("/photos/single");
+const QString singleImage = QStringLiteral("/photos/single/only.jpg");
 
 }  // namespace
 
@@ -71,8 +85,15 @@ private Q_SLOTS:
     void doesNotListSameFolderAgain();
     void ignoresListingOfPreviousFolder();
 
+    void listsInChosenOrder();
+    void changingOrderListsAgainAndKeepsImage();
+    void sameOrderDoesNotListAgain();
+    void wrapsAroundWhenEnabled();
+    void singleImageDoesNotWrapAround();
+
 private:
     void openAndWaitForListing(const QString& filePath);
+    void waitForListing();
 
     std::unique_ptr<Navigator> m_navigator;
     FakeFolderScanner* m_folderScanner = nullptr;  // owned by m_navigator
@@ -83,6 +104,7 @@ void TestNavigator::init()
     auto folderScanner = std::make_unique<FakeFolderScanner>();
     folderScanner->listings.insert(holidayFolder, holidayImages);
     folderScanner->listings.insert(petsFolder, petImages);
+    folderScanner->listings.insert(singleImageFolder, {singleImage});
     m_folderScanner = folderScanner.get();
     m_navigator = createNavigator(std::move(folderScanner));
 }
@@ -190,10 +212,76 @@ void TestNavigator::ignoresListingOfPreviousFolder()
     QCOMPARE(positionSpy.count(), 1);
 }
 
+void TestNavigator::listsInChosenOrder()
+{
+    m_navigator->setSorting({SortOrder::Date});
+
+    openAndWaitForListing(holidayImages.first());
+
+    QCOMPARE(m_folderScanner->lastSortOrder.load(), SortOrder::Date);
+    QCOMPARE(m_navigator->currentIndex(), 2);  // the fake reverses the folder for date order
+}
+
+void TestNavigator::changingOrderListsAgainAndKeepsImage()
+{
+    openAndWaitForListing(holidayImages.first());
+    QSignalSpy requestSpy(m_navigator.get(), &Navigator::imageRequested);
+
+    m_navigator->setSorting({SortOrder::Date});
+    waitForListing();
+
+    QCOMPARE(m_folderScanner->listingCount.load(), 2);
+    QCOMPARE(m_navigator->currentIndex(), 2);
+    QCOMPARE(requestSpy.count(), 0);  // the image on screen stays
+}
+
+void TestNavigator::sameOrderDoesNotListAgain()
+{
+    openAndWaitForListing(holidayImages.first());
+
+    m_navigator->setSorting({SortOrder::Name});
+
+    QCOMPARE(m_navigator->currentIndex(), 0);
+    QCOMPARE(m_folderScanner->listingCount.load(), 1);
+}
+
+void TestNavigator::wrapsAroundWhenEnabled()
+{
+    openAndWaitForListing(holidayImages.last());
+    m_navigator->setWrapAround(true);
+    QSignalSpy requestSpy(m_navigator.get(), &Navigator::imageRequested);
+
+    m_navigator->goToNext();
+    QCOMPARE(m_navigator->currentIndex(), 0);
+    m_navigator->goToPrevious();
+
+    QCOMPARE(m_navigator->currentIndex(), 2);
+    QCOMPARE(requestSpy.count(), 2);
+    QCOMPARE(requestSpy.at(0).first().toString(), holidayImages.first());
+    QCOMPARE(requestSpy.at(1).first().toString(), holidayImages.last());
+}
+
+void TestNavigator::singleImageDoesNotWrapAround()
+{
+    m_navigator->setWrapAround(true);
+
+    openAndWaitForListing(singleImage);
+
+    QCOMPARE(m_navigator->currentIndex(), 0);
+    QVERIFY(!m_navigator->canGoToNext());
+    QVERIFY(!m_navigator->canGoToPrevious());
+}
+
 void TestNavigator::openAndWaitForListing(const QString& filePath)
 {
     QSignalSpy positionSpy(m_navigator.get(), &Navigator::positionChanged);
     m_navigator->openImage(filePath);
+    QVERIFY(positionSpy.wait());
+}
+
+void TestNavigator::waitForListing()
+{
+    QSignalSpy positionSpy(m_navigator.get(), &Navigator::positionChanged);
     QVERIFY(positionSpy.wait());
 }
 

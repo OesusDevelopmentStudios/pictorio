@@ -23,6 +23,8 @@ struct Sorting
 {
     SortOrder order = SortOrder::Name;
     quint32 randomSeed = 0;  // used only by SortOrder::Random
+
+    friend bool operator==(const Sorting&, const Sorting&) = default;
 };
 
 // Lists the images in a folder. Thread-safe, so it can run in the background.

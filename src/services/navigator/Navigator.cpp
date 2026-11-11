@@ -44,20 +44,45 @@ void Navigator::openImage(const QString& filePath)
     }
     else
     {
-        m_folderPath.clear();
-        m_imagePaths.clear();
-        m_currentIndex = -1;
+        clearListing();
         startListingFolder(folderPath);
     }
 
     Q_EMIT positionChanged();
 }
 
+void Navigator::setSorting(const folder_scanner::Sorting& sorting)
+{
+    if (sorting == m_sorting)
+    {
+        return;
+    }
+
+    m_sorting = sorting;
+    if (m_currentPath.isEmpty())
+    {
+        return;
+    }
+
+    clearListing();
+    startListingFolder(QFileInfo(m_currentPath).path());
+    Q_EMIT positionChanged();
+}
+
+void Navigator::setWrapAround(bool wrapAround)
+{
+    if (wrapAround != m_wrapAround)
+    {
+        m_wrapAround = wrapAround;
+        Q_EMIT positionChanged();
+    }
+}
+
 void Navigator::goToPrevious()
 {
     if (canGoToPrevious())
     {
-        goToIndex(m_currentIndex - 1);
+        goToIndex((m_currentIndex + imageCount() - 1) % imageCount());
     }
 }
 
@@ -65,7 +90,7 @@ void Navigator::goToNext()
 {
     if (canGoToNext())
     {
-        goToIndex(m_currentIndex + 1);
+        goToIndex((m_currentIndex + 1) % imageCount());
     }
 }
 
@@ -81,27 +106,44 @@ int Navigator::imageCount() const
 
 bool Navigator::canGoToPrevious() const
 {
-    return m_currentIndex > 0;
+    if (m_currentIndex < 0 || imageCount() < 2)
+    {
+        return false;
+    }
+
+    return m_wrapAround || m_currentIndex > 0;
 }
 
 bool Navigator::canGoToNext() const
 {
-    return m_currentIndex >= 0 && m_currentIndex < imageCount() - 1;
+    if (m_currentIndex < 0 || imageCount() < 2)
+    {
+        return false;
+    }
+
+    return m_wrapAround || m_currentIndex < imageCount() - 1;
 }
 
 void Navigator::startListingFolder(const QString& folderPath)
 {
-    m_listingWatcher.setFuture(QtConcurrent::run([folderScanner = m_folderScanner, folderPath]() {
-        return FolderListing{folderPath, folderScanner->listImages(folderPath, {})};
+    m_listingWatcher.setFuture(QtConcurrent::run([folderScanner = m_folderScanner, folderPath, sorting = m_sorting]() {
+        return FolderListing{folderPath, sorting, folderScanner->listImages(folderPath, sorting)};
     }));
+}
+
+void Navigator::clearListing()
+{
+    m_folderPath.clear();
+    m_imagePaths.clear();
+    m_currentIndex = -1;
 }
 
 void Navigator::takeFolderListing()
 {
     FolderListing listing = m_listingWatcher.result();
 
-    // In the meantime an image in another folder may have been opened.
-    if (listing.folderPath != QFileInfo(m_currentPath).path())
+    // In the meantime an image in another folder may have been opened, or the sorting changed.
+    if (listing.folderPath != QFileInfo(m_currentPath).path() || listing.sorting != m_sorting)
     {
         return;
     }
