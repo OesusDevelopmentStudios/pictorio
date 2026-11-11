@@ -1,0 +1,48 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# SPDX-FileCopyrightText: 2026 OesusDevelopmentStudios
+#
+# Flatpak manifest for local development builds: it builds the source tree this file is in.
+# Build and run from the repository root:
+#
+#   flatpak-builder --user --install --force-clean build-flatpak \
+#       packaging/flatpak/io.github.oesusdevelopmentstudios.pictorio.yml
+#   flatpak run io.github.oesusdevelopmentstudios.pictorio
+#
+# A Flathub release would use a "git" source with a fixed tag instead of the "dir" source below.
+
+id: io.github.oesusdevelopmentstudios.pictorio
+
+# KDE runtime: Qt and KDE Frameworks (Kirigami, KI18n, KCoreAddons, Qt Quick desktop style)
+runtime: org.kde.Platform
+runtime-version: '6.11'
+sdk: org.kde.Sdk
+
+command: pictorio
+
+# Sandbox permissions. Each permission is added together with the feature that needs it,
+# so that the reason for every entry is visible in the history.
+finish-args:
+  - --socket=wayland        # display on Wayland
+  - --socket=fallback-x11   # display on X11, only when Wayland is not available
+  - --device=dri            # GPU acceleration for Qt Quick
+  - --share=ipc             # shared memory for X11
+
+modules:
+  - name: pictorio
+    buildsystem: cmake-ninja
+    builddir: true
+    config-opts:
+      - -DCMAKE_BUILD_TYPE=Release
+      - -DBUILD_TESTING=OFF
+      # A newer compiler in the SDK may add warnings; they must not break a package build.
+      - -DPICTORIO_WARNINGS_AS_ERRORS=OFF
+      # flatpak-builder sets CMAKE_INSTALL_LIBDIR; ECM warns unless the KDE variant is set as well.
+      - -DKDE_INSTALL_LIBDIR=lib
+    sources:
+      - type: dir
+        path: ../..
+        # Local build output must not be copied into the Flatpak build.
+        skip:
+          - build
+          - build-flatpak
+          - .flatpak-builder

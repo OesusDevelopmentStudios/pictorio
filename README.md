@@ -62,6 +62,19 @@ Check the QML files with Qt's linter:
 cmake --build build --target pictorio_qmllint
 ```
 
+### Flatpak
+
+Needs `flatpak-builder` and the KDE runtime from Flathub
+(`flatpak install flathub org.kde.Sdk//6.11 org.kde.Platform//6.11`). From the repository root:
+
+```sh
+flatpak-builder --user --install --force-clean build-flatpak \
+    packaging/flatpak/io.github.oesusdevelopmentstudios.pictorio.yml
+flatpak run io.github.oesusdevelopmentstudios.pictorio
+```
+
+This builds the current source tree, including uncommitted changes.
+
 ## Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for the code layout and coding style.
