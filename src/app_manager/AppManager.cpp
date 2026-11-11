@@ -8,6 +8,7 @@
 #include "FolderScannerFactory.hpp"
 #include "ImageLoaderFactory.hpp"
 #include "NavigatorFactory.hpp"
+#include "SlideshowFactory.hpp"
 #include "ViewTransformFactory.hpp"
 #include "ViewerFactory.hpp"
 
@@ -19,6 +20,7 @@ AppManager::AppManager(QObject* parent)
     , m_viewer(viewer::createViewer(image_loader::createImageLoader()))
     , m_viewTransform(view_transform::createViewTransform())
     , m_navigator(navigator::createNavigator(folder_scanner::createFolderScanner(image_loader::createImageLoader())))
+    , m_slideshow(slideshow::createSlideshow(m_navigator.get()))
 {
     connect(m_navigator.get(), &navigator::Navigator::imageRequested, m_viewer.get(), &viewer::Viewer::openImage);
 
@@ -43,6 +45,11 @@ view_transform::ViewTransform* AppManager::viewTransform() const
 navigator::Navigator* AppManager::navigator() const
 {
     return m_navigator.get();
+}
+
+slideshow::Slideshow* AppManager::slideshow() const
+{
+    return m_slideshow.get();
 }
 
 }  // namespace pictorio::app_manager

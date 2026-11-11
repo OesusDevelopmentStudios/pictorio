@@ -11,6 +11,7 @@
 #include <QtQmlIntegration/qqmlintegration.h>
 
 #include "Navigator.hpp"
+#include "Slideshow.hpp"
 #include "ViewTransform.hpp"
 #include "Viewer.hpp"
 
@@ -27,6 +28,7 @@ class AppManager : public QObject
     Q_PROPERTY(pictorio::viewer::Viewer* viewer READ viewer CONSTANT)
     Q_PROPERTY(pictorio::view_transform::ViewTransform* viewTransform READ viewTransform CONSTANT)
     Q_PROPERTY(pictorio::navigator::Navigator* navigator READ navigator CONSTANT)
+    Q_PROPERTY(pictorio::slideshow::Slideshow* slideshow READ slideshow CONSTANT)
 
 public:
     explicit AppManager(QObject* parent = nullptr);
@@ -35,11 +37,13 @@ public:
     viewer::Viewer* viewer() const;
     view_transform::ViewTransform* viewTransform() const;
     navigator::Navigator* navigator() const;
+    slideshow::Slideshow* slideshow() const;
 
 private:
     std::unique_ptr<viewer::Viewer> m_viewer;
     std::unique_ptr<view_transform::ViewTransform> m_viewTransform;
     std::unique_ptr<navigator::Navigator> m_navigator;
+    std::unique_ptr<slideshow::Slideshow> m_slideshow;  // uses m_navigator, so declared after it
 };
 
 }  // namespace pictorio::app_manager

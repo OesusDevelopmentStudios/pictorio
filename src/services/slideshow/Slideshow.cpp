@@ -120,6 +120,16 @@ void Slideshow::setIntervalSeconds(int intervalSeconds)
     Q_EMIT intervalSecondsChanged();
 }
 
+int Slideshow::minimumIntervalSecondsForQml() const
+{
+    return minimumIntervalSeconds;
+}
+
+int Slideshow::maximumIntervalSecondsForQml() const
+{
+    return maximumIntervalSeconds;
+}
+
 void Slideshow::showNextImage()
 {
     // Nothing to do while the folder is still being listed; the next tick tries again.

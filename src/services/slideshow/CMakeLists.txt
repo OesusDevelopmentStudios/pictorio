@@ -17,3 +17,6 @@ target_link_libraries(pictorio_slideshow PUBLIC
     pictorio_navigator
     Qt6::Core
 )
+
+# Slideshow is exposed to QML (app_manager/QmlForeignTypes.hpp); QML tools read its properties from these metatypes.
+qt_extract_metatypes(pictorio_slideshow)

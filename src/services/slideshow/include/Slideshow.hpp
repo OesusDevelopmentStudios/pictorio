@@ -23,6 +23,8 @@ class Slideshow : public QObject
     Q_PROPERTY(bool running READ isRunning NOTIFY stateChanged)
     Q_PROPERTY(bool paused READ isPaused NOTIFY stateChanged)
     Q_PROPERTY(int intervalSeconds READ intervalSeconds WRITE setIntervalSeconds NOTIFY intervalSecondsChanged)
+    Q_PROPERTY(int minimumIntervalSeconds READ minimumIntervalSecondsForQml CONSTANT)
+    Q_PROPERTY(int maximumIntervalSeconds READ maximumIntervalSecondsForQml CONSTANT)
 
 public:
     enum class Order
@@ -57,6 +59,10 @@ Q_SIGNALS:
     void intervalSecondsChanged();
 
 private:
+    // The limits for QML, which cannot read static members
+    int minimumIntervalSecondsForQml() const;
+    int maximumIntervalSecondsForQml() const;
+
     void showNextImage();
     void restartIntervalIfShowing();
 

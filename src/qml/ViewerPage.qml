@@ -9,13 +9,17 @@ import org.kde.kirigami as Kirigami
 import org.kde.ki18n
 
 // Shows the current image with zoom and rotation, or a message when there is none.
-// Previous / next step through the image's folder.
+// Previous / next step through the image's folder. During a slideshow the page presents the images:
+// black background and a control bar that appears when the mouse moves.
 Kirigami.Page {
     id: page
 
     required property Viewer viewer
     required property ViewTransform viewTransform
     required property Navigator navigator
+    required property Slideshow slideshow
+
+    readonly property bool presenting: slideshow.running
 
     title: {
         if (viewer.fileName.length === 0) {
@@ -28,6 +32,10 @@ Kirigami.Page {
                            "%1 (%2 of %3)", viewer.fileName, navigator.currentIndex + 1, navigator.imageCount);
     }
     padding: 0
+
+    background: Rectangle {
+        color: page.presenting ? "black" : Kirigami.Theme.backgroundColor
+    }
 
     actions: [
         Kirigami.Action {
@@ -45,6 +53,24 @@ Kirigami.Page {
             shortcut: "Right"
             enabled: page.navigator.canGoToNext
             onTriggered: page.navigator.goToNext()
+        },
+        Kirigami.Action {
+            icon.name: "media-playback-start"
+            text: KI18n.i18nc("@action:intoolbar", "Slideshow")
+            enabled: page.viewer.hasImage
+
+            Kirigami.Action {
+                text: KI18n.i18nc("@action:inmenu Slideshow order", "By Name")
+                onTriggered: page.slideshow.start(Slideshow.Order.ByName)
+            }
+            Kirigami.Action {
+                text: KI18n.i18nc("@action:inmenu Slideshow order", "By Date Taken")
+                onTriggered: page.slideshow.start(Slideshow.Order.ByDate)
+            }
+            Kirigami.Action {
+                text: KI18n.i18nc("@action:inmenu Slideshow order", "In Random Order")
+                onTriggered: page.slideshow.start(Slideshow.Order.Random)
+            }
         },
         Kirigami.Action {
             icon.name: "zoom-out"
@@ -109,6 +135,18 @@ Kirigami.Page {
 
     function zoomAroundCenter(zoomAction: var) {
         zoomAround(Qt.point(flickable.width / 2, flickable.height / 2), zoomAction);
+    }
+
+    Shortcut {
+        sequences: [StandardKey.Cancel]
+        enabled: page.presenting
+        onActivated: page.slideshow.stop()
+    }
+
+    Shortcut {
+        sequence: "Space"
+        enabled: page.presenting
+        onActivated: page.slideshow.paused ? page.slideshow.resume() : page.slideshow.pause()
     }
 
     Binding {
@@ -220,5 +258,12 @@ Kirigami.Page {
         icon.name: "data-error"
         text: KI18n.i18nc("@info:placeholder %1 is a file name", "Cannot open %1", page.viewer.fileName)
         explanation: page.viewer.errorMessage
+    }
+
+    SlideshowControls {
+        anchors.fill: parent
+        visible: page.presenting
+        slideshow: page.slideshow
+        navigator: page.navigator
     }
 }

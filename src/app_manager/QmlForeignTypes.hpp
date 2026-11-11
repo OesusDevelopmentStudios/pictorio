@@ -9,6 +9,7 @@
 #include <QtQmlIntegration/qqmlintegration.h>
 
 #include "Navigator.hpp"
+#include "Slideshow.hpp"
 #include "ViewTransform.hpp"
 #include "Viewer.hpp"
 
@@ -39,6 +40,14 @@ struct ForeignNavigator
     Q_GADGET
     QML_FOREIGN(pictorio::navigator::Navigator)
     QML_NAMED_ELEMENT(Navigator)
+    QML_UNCREATABLE("Provided by AppManager")
+};
+
+struct ForeignSlideshow
+{
+    Q_GADGET
+    QML_FOREIGN(pictorio::slideshow::Slideshow)
+    QML_NAMED_ELEMENT(Slideshow)
     QML_UNCREATABLE("Provided by AppManager")
 };
 

@@ -18,9 +18,34 @@ Kirigami.ApplicationWindow {
     width: Kirigami.Units.gridUnit * 50
     height: Kirigami.Units.gridUnit * 35
 
+    // A slideshow shows only the image: no toolbar, fullscreen.
+    pageStack.globalToolBar.style: appManager.slideshow.running ? Kirigami.ApplicationHeaderStyle.None
+                                                                : Kirigami.ApplicationHeaderStyle.Auto
+
     pageStack.initialPage: ViewerPage {
         viewer: root.appManager.viewer
         viewTransform: root.appManager.viewTransform
         navigator: root.appManager.navigator
+        slideshow: root.appManager.slideshow
+    }
+
+    // Restored when the slideshow ends, e.g. a maximized window stays maximized.
+    property int visibilityBeforeSlideshow: Window.Windowed
+    property bool fullScreenForSlideshow: false
+
+    Connections {
+        target: root.appManager.slideshow
+
+        function onStateChanged() {
+            const running = root.appManager.slideshow.running;
+            if (running && root.visibility !== Window.FullScreen) {
+                root.visibilityBeforeSlideshow = root.visibility;
+                root.fullScreenForSlideshow = true;
+                root.showFullScreen();
+            } else if (!running && root.fullScreenForSlideshow) {
+                root.fullScreenForSlideshow = false;
+                root.visibility = root.visibilityBeforeSlideshow;
+            }
+        }
     }
 }
