@@ -3,6 +3,9 @@
 
 # Reads size, orientation and type of an image file (see include/ImageLoader.hpp).
 add_library(pictorio_image_loader STATIC
+    include/ImageLoader.hpp
+    include/ImageLoaderFactory.hpp
+    impl/QtImageLoader.hpp
     ImageLoader.cpp
     ImageLoaderFactory.cpp
     impl/QtImageLoader.cpp

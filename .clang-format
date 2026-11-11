@@ -6,8 +6,26 @@
 
 BasedOnStyle: LLVM
 
-# Braces on their own line (Allman style)
-BreakBeforeBraces: Allman
+# Braces on their own line (Allman style); an empty function body stays on one line: {}
+BreakBeforeBraces: Custom
+BraceWrapping:
+  AfterCaseLabel: true
+  AfterClass: true
+  AfterControlStatement: Always
+  AfterEnum: true
+  AfterFunction: true
+  AfterNamespace: true
+  AfterStruct: true
+  AfterUnion: true
+  AfterExternBlock: true
+  BeforeCatch: true
+  BeforeElse: true
+  BeforeLambdaBody: false
+  BeforeWhile: false
+  IndentBraces: false
+  SplitEmptyFunction: false
+  SplitEmptyRecord: true
+  SplitEmptyNamespace: true
 IndentWidth: 4
 TabWidth: 4
 UseTab: Never
@@ -23,8 +41,8 @@ NamespaceIndentation: None
 FixNamespaceComments: true
 SpacesBeforeTrailingComments: 2
 
-# Readability: no one-line functions, ifs or loops
-AllowShortFunctionsOnASingleLine: None
+# Readability: no one-line functions (except empty ones), ifs or loops
+AllowShortFunctionsOnASingleLine: Empty
 AllowShortIfStatementsOnASingleLine: Never
 AllowShortLoopsOnASingleLine: false
 AllowShortBlocksOnASingleLine: Never
@@ -38,6 +56,10 @@ SeparateDefinitionBlocks: Always
 # If a call or declaration does not fit on one line, put each argument / parameter on its own line
 BinPackArguments: false
 BinPackParameters: OnePerLine
+
+# Constructor initializers: one per line, comma first
+BreakConstructorInitializers: BeforeComma
+PackConstructorInitializers: Never
 
 # Includes are grouped by hand, one block per group, in this order: own header, standard library,
 # external libraries, common helpers, local files. clang-format only sorts inside a block.

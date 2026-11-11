@@ -59,7 +59,8 @@ columns, one argument per line when a call does not fit on one line.
 |---|---|---|
 | Classes, structs, enums | `PascalCase` | `FolderScanner` |
 | Functions, variables | `camelCase` | `registerApplicationIdentity()` |
-| Member variables | `m_` + `camelCase` | `m_currentIndex` |
+| Private member variables | `m_` + `camelCase` | `m_currentIndex` |
+| Public fields of plain structs | `camelCase` | `ImageInfo::displaySize` |
 | C++ files | `PascalCase`, usually named after the main class (exception: `main.cpp`) | `QtImageLoader.hpp`, `AppIdentity.cpp` |
 | Folders | `snake_case` | `services/image_loader/` |
 | Namespaces | `pictorio::snake_case` | `pictorio::folder_scanner` |
@@ -89,6 +90,15 @@ return std::nullopt;
 
 clang-format enforces this only between function and class definitions; inside functions it is checked
 in review.
+
+An empty function body stays on one line: `{}`.
+
+```cpp
+Viewer::Viewer(std::unique_ptr<image_loader::ImageLoader> imageLoader, QObject* parent)
+    : QObject(parent)
+    , m_imageLoader(std::move(imageLoader))
+{}
+```
 
 ### `.cpp` file layout
 
