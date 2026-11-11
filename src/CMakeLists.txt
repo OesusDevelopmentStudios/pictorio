@@ -29,6 +29,7 @@ add_subdirectory(services/viewer)
 add_subdirectory(services/view_transform)
 add_subdirectory(services/folder_scanner)
 add_subdirectory(services/navigator)
+add_subdirectory(services/slideshow)
 
 # The application. main.cpp only wires things together; logic lives in the libraries above.
 add_executable(pictorio)
