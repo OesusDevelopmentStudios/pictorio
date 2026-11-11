@@ -32,6 +32,10 @@ ecm_add_test(services/folder_scanner/TestFolderScanner.cpp
     LINK_LIBRARIES pictorio_folder_scanner Qt6::Test
 )
 
+ecm_add_test(services/navigator/TestNavigator.cpp
+    LINK_LIBRARIES pictorio_navigator Qt6::Test
+)
+
 ecm_add_test(packaging/TestDesktopFile.cpp
     LINK_LIBRARIES pictorio_image_loader Qt6::Gui Qt6::Test KF6::I18n
 )
