@@ -26,6 +26,7 @@ target_link_libraries(pictorio_utils
 
 add_subdirectory(services/image_loader)
 add_subdirectory(services/viewer)
+add_subdirectory(services/view_transform)
 
 # The application. main.cpp only wires things together; logic lives in the libraries above.
 add_executable(pictorio)

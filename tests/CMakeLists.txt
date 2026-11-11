@@ -23,3 +23,7 @@ ecm_add_test(services/image_loader/TestImageLoader.cpp
 ecm_add_test(services/viewer/TestViewer.cpp
     LINK_LIBRARIES pictorio_viewer Qt6::Test KF6::I18n
 )
+
+ecm_add_test(services/view_transform/TestViewTransform.cpp
+    LINK_LIBRARIES pictorio_view_transform Qt6::Test
+)
