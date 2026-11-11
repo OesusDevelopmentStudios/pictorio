@@ -27,3 +27,10 @@ ecm_add_test(services/viewer/TestViewer.cpp
 ecm_add_test(services/view_transform/TestViewTransform.cpp
     LINK_LIBRARIES pictorio_view_transform Qt6::Test
 )
+
+ecm_add_test(packaging/TestDesktopFile.cpp
+    LINK_LIBRARIES pictorio_image_loader Qt6::Gui Qt6::Test KF6::I18n
+)
+target_compile_definitions(TestDesktopFile PRIVATE
+    DESKTOP_FILE="${PROJECT_SOURCE_DIR}/packaging/io.github.oesusdevelopmentstudios.pictorio.desktop"
+)

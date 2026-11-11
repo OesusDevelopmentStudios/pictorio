@@ -26,6 +26,9 @@ finish-args:
   - --socket=fallback-x11   # display on X11, only when Wayland is not available
   - --device=dri            # GPU acceleration for Qt Quick
   - --share=ipc             # shared memory for X11
+  # Read images by their real path: from the command line, and from Dolphin without a document-portal
+  # copy, so that the folder of the opened image can be browsed.
+  - --filesystem=host:ro
 
 modules:
   - name: pictorio

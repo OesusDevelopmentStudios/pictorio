@@ -10,7 +10,8 @@ Pictorio is an image viewer and photo library for KDE Plasma.
   it becomes a tag-based photo library: search by tags, browse a thumbnail grid, edit tags, upload
   photos.
 
-> **Status:** early development. The application currently opens an empty window.
+> **Status:** early development. The application opens a single image (from Dolphin or the command
+> line) and can zoom and rotate it.
 
 ## Building
 
@@ -23,6 +24,7 @@ Pictorio is an image viewer and photo library for KDE Plasma.
 | Qt (Core, Gui, Qml, Quick, QuickControls2, Widgets, Test) | 6.8 |
 | KDE Frameworks (Extra CMake Modules, Kirigami, KI18n, KCoreAddons) | 6.21 |
 | KDE desktop style for Qt Quick (qqc2-desktop-style), needed at run time | |
+| Qt and KDE image format plugins (qtimageformats, kimageformats), needed at run time for WebP, TIFF, AVIF, HEIF and JPEG XL | |
 
 On Fedora:
 
@@ -30,8 +32,11 @@ On Fedora:
 sudo dnf install cmake gcc-c++ extra-cmake-modules \
     qt6-qtbase-devel qt6-qtdeclarative-devel \
     kf6-kirigami-devel kf6-ki18n-devel kf6-kcoreaddons-devel \
-    kf6-qqc2-desktop-style
+    kf6-qqc2-desktop-style qt6-qtimageformats kf6-kimageformats
 ```
+
+HEIF images also need an HEVC decoder for libheif, which Fedora does not ship. The Flatpak build
+opens them.
 
 ### Build and run
 

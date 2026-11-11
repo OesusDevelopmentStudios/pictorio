@@ -11,5 +11,5 @@ Exec=pictorio %F
 Terminal=false
 Categories=Qt;KDE;Graphics;Viewer;Photography;
 Keywords=image;photo;picture;viewer;slideshow;gallery;
-# Formats every Qt build can display. Extend this list only after checking that the app opens the format.
-MimeType=image/jpeg;image/png;image/gif;image/webp;image/bmp;image/tiff;
+# Image types the app opens. tests/packaging/TestDesktopFile.cpp checks each of them.
+MimeType=image/jpeg;image/png;image/gif;image/webp;image/bmp;image/tiff;image/avif;image/heif;image/jxl;
