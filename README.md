@@ -38,7 +38,7 @@ sudo dnf install cmake gcc-c++ extra-cmake-modules \
 ```sh
 cmake -B build
 cmake --build build
-./build/bin/pictorio
+./build/bin/pictorio path_to_image_file
 ```
 
 Build options:
