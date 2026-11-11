@@ -4,6 +4,7 @@
 # Shared helpers. A static library, so that tests can link the same code as the application.
 add_library(pictorio_utils STATIC
     utils/AppIdentity.cpp
+    utils/CommandLine.cpp
 )
 
 # Lets every target that links pictorio_utils write #include "utils/AppIdentity.hpp".
@@ -36,6 +37,8 @@ ecm_add_qml_module(pictorio URI io.github.oesusdevelopmentstudios.pictorio)
 
 target_sources(pictorio PRIVATE
     main.cpp
+    app_manager/AppManager.hpp
+    app_manager/AppManager.cpp
 )
 
 ecm_target_qml_sources(pictorio SOURCES
@@ -44,10 +47,12 @@ ecm_target_qml_sources(pictorio SOURCES
 
 target_link_libraries(pictorio PRIVATE
     pictorio_utils
+    pictorio_viewer
     Qt6::Widgets
     Qt6::Qml
     Qt6::Quick
     Qt6::QuickControls2
+    KF6::CoreAddons
     KF6::I18n
     KF6::I18nQml
 )

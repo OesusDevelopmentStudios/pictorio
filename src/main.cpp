@@ -5,12 +5,17 @@
 
 #include <cstdlib>
 
+#include <KAboutData>
 #include <KLocalizedQmlContext>
 #include <QApplication>
+#include <QCommandLineParser>
+#include <QDir>
 #include <QQmlApplicationEngine>
 #include <QQuickStyle>
 
+#include "app_manager/AppManager.hpp"
 #include "utils/AppIdentity.hpp"
+#include "utils/CommandLine.hpp"
 
 namespace
 {
@@ -34,6 +39,19 @@ int main(int argc, char* argv[])
 
     pictorio::utils::registerApplicationIdentity();
     selectQuickControlsStyle();
+
+    QCommandLineParser commandLineParser;
+    pictorio::utils::addCommandLineOptions(commandLineParser);
+    commandLineParser.process(application);  // exits on --help, --version and errors
+    KAboutData::applicationData().processCommandLine(&commandLineParser);
+    const pictorio::utils::CommandLineOptions commandLineOptions =
+        pictorio::utils::readCommandLineOptions(commandLineParser, QDir::currentPath());
+
+    pictorio::app_manager::AppManager appManager;
+    if (!commandLineOptions.imagePaths.isEmpty())
+    {
+        appManager.viewer()->openImage(commandLineOptions.imagePaths.first());
+    }
 
     QQmlApplicationEngine qmlEngine;
     KLocalization::setupLocalizedContext(&qmlEngine);  // makes KI18n.i18n*() work in QML

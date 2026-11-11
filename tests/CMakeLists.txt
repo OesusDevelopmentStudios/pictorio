@@ -12,6 +12,10 @@ target_compile_definitions(TestAppIdentity PRIVATE
     EXPECTED_VERSION="${PROJECT_VERSION}"
 )
 
+ecm_add_test(utils/TestCommandLine.cpp
+    LINK_LIBRARIES pictorio_utils Qt6::Test
+)
+
 ecm_add_test(services/image_loader/TestImageLoader.cpp
     LINK_LIBRARIES pictorio_image_loader Qt6::Test KF6::I18n
 )
