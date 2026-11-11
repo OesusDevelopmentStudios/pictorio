@@ -56,6 +56,7 @@ ecm_target_qml_sources(pictorio SOURCES
 target_link_libraries(pictorio PRIVATE
     pictorio_utils
     pictorio_viewer
+    pictorio_view_transform
     Qt6::Widgets
     Qt6::Qml
     Qt6::Quick

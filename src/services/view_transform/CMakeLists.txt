@@ -16,3 +16,6 @@ target_include_directories(pictorio_view_transform PUBLIC
 target_link_libraries(pictorio_view_transform PUBLIC
     Qt6::Core
 )
+
+# ViewTransform is exposed to QML (app_manager/QmlForeignTypes.hpp); QML tools read its properties from these metatypes.
+qt_extract_metatypes(pictorio_view_transform)

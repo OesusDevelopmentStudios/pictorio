@@ -8,6 +8,7 @@
 #include <QObject>
 #include <QtQmlIntegration/qqmlintegration.h>
 
+#include "ViewTransform.hpp"
 #include "Viewer.hpp"
 
 // Makes service classes known to QML without the services depending on QML. QML only receives
@@ -21,6 +22,14 @@ struct ForeignViewer
     Q_GADGET
     QML_FOREIGN(pictorio::viewer::Viewer)
     QML_NAMED_ELEMENT(Viewer)
+    QML_UNCREATABLE("Provided by AppManager")
+};
+
+struct ForeignViewTransform
+{
+    Q_GADGET
+    QML_FOREIGN(pictorio::view_transform::ViewTransform)
+    QML_NAMED_ELEMENT(ViewTransform)
     QML_UNCREATABLE("Provided by AppManager")
 };
 

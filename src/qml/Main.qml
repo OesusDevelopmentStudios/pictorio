@@ -20,5 +20,6 @@ Kirigami.ApplicationWindow {
 
     pageStack.initialPage: ViewerPage {
         viewer: root.appManager.viewer
+        viewTransform: root.appManager.viewTransform
     }
 }

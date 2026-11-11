@@ -10,6 +10,7 @@
 #include <QObject>
 #include <QtQmlIntegration/qqmlintegration.h>
 
+#include "ViewTransform.hpp"
 #include "Viewer.hpp"
 
 namespace pictorio::app_manager
@@ -23,15 +24,18 @@ class AppManager : public QObject
     QML_UNCREATABLE("Created in main.cpp")
 
     Q_PROPERTY(pictorio::viewer::Viewer* viewer READ viewer CONSTANT)
+    Q_PROPERTY(pictorio::view_transform::ViewTransform* viewTransform READ viewTransform CONSTANT)
 
 public:
     explicit AppManager(QObject* parent = nullptr);
     ~AppManager() override;
 
     viewer::Viewer* viewer() const;
+    view_transform::ViewTransform* viewTransform() const;
 
 private:
     std::unique_ptr<viewer::Viewer> m_viewer;
+    std::unique_ptr<view_transform::ViewTransform> m_viewTransform;
 };
 
 }  // namespace pictorio::app_manager
