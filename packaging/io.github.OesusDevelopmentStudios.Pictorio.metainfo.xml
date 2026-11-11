@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+SPDX-License-Identifier: CC0-1.0
+SPDX-FileCopyrightText: 2026 OesusDevelopmentStudios
+
+App description shown by software centres (Discover, Flathub). Its license (CC0) is separate from the
+application's license, so that app stores may redistribute this text freely.
+-->
+<component type="desktop-application">
+  <id>io.github.OesusDevelopmentStudios.Pictorio</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>GPL-3.0-or-later</project_license>
+
+  <name>Pictorio</name>
+  <summary>Image viewer and photo library</summary>
+  <developer id="io.github.oesusdevelopmentstudios">
+    <name>OesusDevelopmentStudios</name>
+  </developer>
+
+  <description>
+    <p>
+      Pictorio is an image viewer for KDE Plasma that can grow into a tag-based photo library.
+    </p>
+    <p>On its own it is a simple image viewer:</p>
+    <ul>
+      <li>Open images from your file manager</li>
+      <li>Zoom and rotate</li>
+      <li>Step through a folder or run a slideshow</li>
+    </ul>
+    <p>Connected to a pictorio-db server it becomes a photo library:</p>
+    <ul>
+      <li>Search your photos by tags, dates, authors and albums</li>
+      <li>Browse a thumbnail grid of your whole collection</li>
+      <li>Upload and tag photos</li>
+    </ul>
+  </description>
+
+  <launchable type="desktop-id">io.github.OesusDevelopmentStudios.Pictorio.desktop</launchable>
+  <provides>
+    <binary>pictorio</binary>
+  </provides>
+
+  <url type="homepage">https://github.com/OesusDevelopmentStudios/pictorio</url>
+  <url type="bugtracker">https://github.com/OesusDevelopmentStudios/pictorio/issues</url>
+  <url type="vcs-browser">https://github.com/OesusDevelopmentStudios/pictorio</url>
+
+  <content_rating type="oars-1.1"/>
+</component>

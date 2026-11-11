@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+SPDX-License-Identifier: GPL-3.0-or-later
+SPDX-FileCopyrightText: 2026 OesusDevelopmentStudios
+
+PLACEHOLDER application icon (a framed picture: sky, sun, mountains). Replace with the real icon.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <rect x="8" y="16" width="112" height="96" rx="8" fill="#eff0f1" stroke="#31363b" stroke-width="4"/>
+  <rect x="18" y="26" width="92" height="76" rx="2" fill="#3daee9"/>
+  <circle cx="88" cy="46" r="10" fill="#fdbc4b"/>
+  <path d="M18 102 L50 58 L72 86 L84 72 L110 102 Z" fill="#27ae60"/>
+</svg>

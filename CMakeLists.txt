@@ -53,6 +53,7 @@ ecm_find_qmlmodule(org.kde.kirigami REQUIRED)
 ecm_find_qmlmodule(org.kde.ki18n REQUIRED)
 
 add_subdirectory(src)
+add_subdirectory(packaging)
 
 # BUILD_TESTING is ON by default (set by KDECMakeSettings). Turn it off with -DBUILD_TESTING=OFF,
 # e.g. for packaging. Run the tests with: ctest --test-dir <build dir>

@@ -1,0 +1,15 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# SPDX-FileCopyrightText: 2026 OesusDevelopmentStudios
+
+[Desktop Entry]
+Type=Application
+Name=Pictorio
+GenericName=Image Viewer
+Comment=View images and organise your photo library
+Icon=io.github.OesusDevelopmentStudios.Pictorio
+Exec=pictorio %F
+Terminal=false
+Categories=Qt;KDE;Graphics;Viewer;Photography;
+Keywords=image;photo;picture;viewer;slideshow;gallery;
+# Formats every Qt build can display. Extend this list only after checking that the app opens the format.
+MimeType=image/jpeg;image/png;image/gif;image/webp;image/bmp;image/tiff;
