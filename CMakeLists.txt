@@ -51,6 +51,7 @@ find_package(KF6 ${KF_MIN_VERSION} REQUIRED COMPONENTS
     Kirigami     # QML user interface components
     I18n         # translations
     CoreAddons   # application metadata (KAboutData)
+    Config       # settings file (KConfig)
 )
 
 # Image metadata: the date a photo was taken. ECM's find module, because exiv2's own CMake package
