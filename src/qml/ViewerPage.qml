@@ -9,16 +9,43 @@ import org.kde.kirigami as Kirigami
 import org.kde.ki18n
 
 // Shows the current image with zoom and rotation, or a message when there is none.
+// Previous / next step through the image's folder.
 Kirigami.Page {
     id: page
 
     required property Viewer viewer
     required property ViewTransform viewTransform
+    required property Navigator navigator
 
-    title: viewer.hasImage ? viewer.fileName : KI18n.i18nc("@title", "Viewer")
+    title: {
+        if (viewer.fileName.length === 0) {
+            return KI18n.i18nc("@title", "Viewer");
+        }
+        if (navigator.currentIndex < 0) {
+            return viewer.fileName;
+        }
+        return KI18n.i18nc("@title %1 is a file name, %2 its position in the folder, %3 the number of images",
+                           "%1 (%2 of %3)", viewer.fileName, navigator.currentIndex + 1, navigator.imageCount);
+    }
     padding: 0
 
     actions: [
+        Kirigami.Action {
+            icon.name: "go-previous"
+            text: KI18n.i18nc("@action:intoolbar Previous image in the folder", "Previous")
+            displayHint: Kirigami.DisplayHint.IconOnly
+            shortcut: "Left"
+            enabled: page.navigator.canGoToPrevious
+            onTriggered: page.navigator.goToPrevious()
+        },
+        Kirigami.Action {
+            icon.name: "go-next"
+            text: KI18n.i18nc("@action:intoolbar Next image in the folder", "Next")
+            displayHint: Kirigami.DisplayHint.IconOnly
+            shortcut: "Right"
+            enabled: page.navigator.canGoToNext
+            onTriggered: page.navigator.goToNext()
+        },
         Kirigami.Action {
             icon.name: "zoom-out"
             text: KI18n.i18nc("@action:intoolbar", "Zoom Out")

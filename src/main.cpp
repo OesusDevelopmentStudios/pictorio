@@ -50,7 +50,7 @@ int main(int argc, char* argv[])
     pictorio::app_manager::AppManager appManager;
     if (!commandLineOptions.imagePaths.isEmpty())
     {
-        appManager.viewer()->openImage(commandLineOptions.imagePaths.first());
+        appManager.navigator()->openImage(commandLineOptions.imagePaths.first());
     }
 
     QQmlApplicationEngine qmlEngine;

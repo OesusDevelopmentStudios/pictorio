@@ -59,6 +59,7 @@ target_link_libraries(pictorio PRIVATE
     pictorio_utils
     pictorio_viewer
     pictorio_view_transform
+    pictorio_navigator
     Qt6::Widgets
     Qt6::Qml
     Qt6::Quick

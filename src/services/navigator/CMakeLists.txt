@@ -20,3 +20,6 @@ target_link_libraries(pictorio_navigator
     PRIVATE
         Qt6::Concurrent  # lists the folder in the background
 )
+
+# Navigator is exposed to QML (app_manager/QmlForeignTypes.hpp); QML tools read its properties from these metatypes.
+qt_extract_metatypes(pictorio_navigator)

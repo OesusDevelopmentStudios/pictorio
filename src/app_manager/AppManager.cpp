@@ -5,7 +5,9 @@
 
 #include "app_manager/AppManager.hpp"
 
+#include "FolderScannerFactory.hpp"
 #include "ImageLoaderFactory.hpp"
+#include "NavigatorFactory.hpp"
 #include "ViewTransformFactory.hpp"
 #include "ViewerFactory.hpp"
 
@@ -16,7 +18,10 @@ AppManager::AppManager(QObject* parent)
     : QObject(parent)
     , m_viewer(viewer::createViewer(image_loader::createImageLoader()))
     , m_viewTransform(view_transform::createViewTransform())
+    , m_navigator(navigator::createNavigator(folder_scanner::createFolderScanner()))
 {
+    connect(m_navigator.get(), &navigator::Navigator::imageRequested, m_viewer.get(), &viewer::Viewer::openImage);
+
     // Every newly opened image starts fitted to the window and not rotated.
     connect(m_viewer.get(), &viewer::Viewer::currentImageChanged, m_viewTransform.get(), [this]() {
         m_viewTransform->showImage(m_viewer->imageDisplaySize());
@@ -33,6 +38,11 @@ viewer::Viewer* AppManager::viewer() const
 view_transform::ViewTransform* AppManager::viewTransform() const
 {
     return m_viewTransform.get();
+}
+
+navigator::Navigator* AppManager::navigator() const
+{
+    return m_navigator.get();
 }
 
 }  // namespace pictorio::app_manager
