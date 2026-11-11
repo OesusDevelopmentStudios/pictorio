@@ -18,6 +18,7 @@ namespace
 {
 
 using pictorio::folder_scanner::FolderScanner;
+using pictorio::folder_scanner::Sorting;
 
 constexpr int openGate = 1000;
 
@@ -26,7 +27,7 @@ constexpr int openGate = 1000;
 class FakeFolderScanner : public FolderScanner
 {
 public:
-    QStringList listImages(const QString& folderPath) const override
+    QStringList listImages(const QString& folderPath, const Sorting& /*sorting*/) const override
     {
         gate.acquire();
         ++listingCount;

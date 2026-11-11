@@ -21,7 +21,9 @@ target_include_directories(pictorio_folder_scanner
 
 target_link_libraries(pictorio_folder_scanner
     PUBLIC
+        pictorio_image_loader
         Qt6::Core
     PRIVATE
         Qt6::Gui
+        Qt6::Concurrent  # reads capture dates in parallel
 )

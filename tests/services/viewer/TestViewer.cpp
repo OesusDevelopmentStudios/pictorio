@@ -29,6 +29,11 @@ public:
         return nextResult;
     }
 
+    QDateTime readCaptureDate(const QString& /*filePath*/) const override
+    {
+        return {};
+    }
+
     std::expected<ImageInfo, ImageLoadError> nextResult = std::unexpected(ImageLoadError::FileNotFound);
     mutable QStringList requestedPaths;
 };

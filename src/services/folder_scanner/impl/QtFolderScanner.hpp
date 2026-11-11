@@ -5,7 +5,10 @@
 
 #pragma once
 
+#include <memory>
+
 #include "FolderScanner.hpp"
+#include "ImageLoader.hpp"
 
 namespace pictorio::folder_scanner
 {
@@ -14,7 +17,14 @@ namespace pictorio::folder_scanner
 class QtFolderScanner : public FolderScanner
 {
 public:
-    QStringList listImages(const QString& folderPath) const override;
+    explicit QtFolderScanner(std::unique_ptr<const image_loader::ImageLoader> imageLoader);
+
+    QStringList listImages(const QString& folderPath, const Sorting& sorting) const override;
+
+private:
+    void sortByDate(QStringList& imagePaths) const;
+
+    std::unique_ptr<const image_loader::ImageLoader> m_imageLoader;
 };
 
 }  // namespace pictorio::folder_scanner

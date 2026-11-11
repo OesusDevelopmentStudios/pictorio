@@ -255,6 +255,7 @@ void TestImageLoader::readsCaptureDate()
 
     QVERIFY(result.has_value());
     QCOMPARE(result->captureDate, expectedCaptureDate);
+    QCOMPARE(m_imageLoader->readCaptureDate(imagePath), expectedCaptureDate);
 }
 
 void TestImageLoader::reportsMissingFile()

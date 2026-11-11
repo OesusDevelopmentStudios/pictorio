@@ -15,6 +15,7 @@ class QtImageLoader : public ImageLoader
 {
 public:
     std::expected<ImageInfo, ImageLoadError> loadInfo(const QString& filePath) const override;
+    QDateTime readCaptureDate(const QString& filePath) const override;
 };
 
 }  // namespace pictorio::image_loader

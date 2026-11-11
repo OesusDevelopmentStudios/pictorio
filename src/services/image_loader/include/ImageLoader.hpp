@@ -56,6 +56,9 @@ public:
     virtual ~ImageLoader();
 
     virtual std::expected<ImageInfo, ImageLoadError> loadInfo(const QString& filePath) const = 0;
+
+    // Only ImageInfo::captureDate; much faster than loadInfo(). Thread-safe.
+    virtual QDateTime readCaptureDate(const QString& filePath) const = 0;
 };
 
 // Translated, user-facing explanation of a load error.

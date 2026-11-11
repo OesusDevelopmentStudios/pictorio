@@ -99,9 +99,14 @@ std::expected<ImageInfo, ImageLoadError> QtImageLoader::loadInfo(const QString& 
     imageInfo.displaySize = applyTransformationToSize(storedSize, imageInfo.exifTransformation);
     imageInfo.mimeType = QMimeDatabase().mimeTypeForFile(imageInfo.filePath, QMimeDatabase::MatchContent).name();
     imageInfo.animated = reader.supportsAnimation() && reader.imageCount() > 1;
-    imageInfo.captureDate = readExifCaptureDate(imageInfo.filePath);
+    imageInfo.captureDate = readCaptureDate(imageInfo.filePath);
 
     return imageInfo;
+}
+
+QDateTime QtImageLoader::readCaptureDate(const QString& filePath) const
+{
+    return readExifCaptureDate(filePath);
 }
 
 }  // namespace pictorio::image_loader

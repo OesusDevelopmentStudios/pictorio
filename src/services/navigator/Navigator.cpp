@@ -92,7 +92,7 @@ bool Navigator::canGoToNext() const
 void Navigator::startListingFolder(const QString& folderPath)
 {
     m_listingWatcher.setFuture(QtConcurrent::run([folderScanner = m_folderScanner, folderPath]() {
-        return FolderListing{folderPath, folderScanner->listImages(folderPath)};
+        return FolderListing{folderPath, folderScanner->listImages(folderPath, {})};
     }));
 }
 

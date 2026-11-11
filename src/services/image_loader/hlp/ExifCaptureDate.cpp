@@ -46,15 +46,15 @@ QDateTime findCaptureDate(const Exiv2::ExifData& exifData)
     return {};
 }
 
-// exiv2 prints warnings about unusual metadata to stderr; a viewer has no use for them.
-void muteExiv2WarningsOnce()
+void initializeExiv2Once()
 {
-    static const bool muted = [] {
-        Exiv2::LogMsg::setLevel(Exiv2::LogMsg::mute);
+    static const bool initialized = [] {
+        Exiv2::XmpParser::initialize();                // required before exiv2 is used from several threads
+        Exiv2::LogMsg::setLevel(Exiv2::LogMsg::mute);  // warnings about unusual metadata are of no use here
         return true;
     }();
 
-    Q_UNUSED(muted)
+    Q_UNUSED(initialized)
 }
 
 }  // namespace
@@ -64,7 +64,7 @@ namespace pictorio::image_loader
 
 QDateTime readExifCaptureDate(const QString& filePath)
 {
-    muteExiv2WarningsOnce();
+    initializeExiv2Once();
 
     try
     {
