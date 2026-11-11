@@ -3,7 +3,7 @@
  * SPDX-FileCopyrightText: 2026 OesusDevelopmentStudios
  */
 
-#include "utils/app_identity.hpp"
+#include "utils/AppIdentity.hpp"
 
 #include <KAboutData>
 #include <KLocalizedString>

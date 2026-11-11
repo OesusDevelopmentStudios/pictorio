@@ -3,10 +3,10 @@
 
 # Shared helpers. A static library, so that tests can link the same code as the application.
 add_library(pictorio_utils STATIC
-    utils/app_identity.cpp
+    utils/AppIdentity.cpp
 )
 
-# Lets every target that links pictorio_utils write #include "utils/app_identity.hpp".
+# Lets every target that links pictorio_utils write #include "utils/AppIdentity.hpp".
 target_include_directories(pictorio_utils PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}
 )
@@ -22,6 +22,8 @@ target_link_libraries(pictorio_utils
         KF6::CoreAddons
         KF6::I18n
 )
+
+add_subdirectory(services/image_loader)
 
 # The application. main.cpp only wires things together; logic lives in the libraries above.
 add_executable(pictorio)

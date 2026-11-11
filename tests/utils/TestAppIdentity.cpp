@@ -8,7 +8,7 @@
 #include <QCoreApplication>
 #include <QTest>
 
-#include "utils/app_identity.hpp"
+#include "utils/AppIdentity.hpp"
 
 namespace pictorio::utils
 {
@@ -75,4 +75,4 @@ void TestAppIdentity::declaresGplVersion3OrLater()
 
 QTEST_GUILESS_MAIN(pictorio::utils::TestAppIdentity)
 
-#include "test_app_identity.moc"
+#include "TestAppIdentity.moc"

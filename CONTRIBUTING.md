@@ -24,7 +24,7 @@ src/
 ├── services/           one folder per service, each with a single responsibility
 ├── utils/              small helpers shared by several services
 └── qml/                user interface (presentation only)
-tests/                  mirrors src/: tests/utils/test_app_identity.cpp tests src/utils/app_identity.cpp
+tests/                  mirrors src/: tests/utils/TestAppIdentity.cpp tests src/utils/AppIdentity.cpp
 ```
 
 **QML contains presentation only.** Decisions (sorting, paging, what to upload, when to delete) live in
@@ -33,14 +33,14 @@ C++ services, where they can be unit-tested.
 ### Service layout
 
 ```
-services/<service_name>/
+services/<service_name>/                    folder: snake_case, e.g. image_loader/
 ├── include/
-│   ├── <service_name>.hpp            public interface: the only header other code may include
-│   └── <service_name>_factory.hpp    creates the service
-├── impl/                             implementation files (.cpp/.hpp)
-├── hlp/                              helpers used only by this service (.cpp/.hpp)
-├── <service_name>.cpp
-└── <service_name>_factory.cpp
+│   ├── <ServiceName>.hpp                   public interface: the only header other code may include
+│   └── <ServiceName>Factory.hpp            creates the service
+├── impl/                                   implementation files (.cpp/.hpp), e.g. QtImageLoader.hpp
+├── hlp/                                    helpers used only by this service (.cpp/.hpp)
+├── <ServiceName>.cpp
+└── <ServiceName>Factory.cpp
 ```
 
 - Code lives in `namespace pictorio::<service_name>`.
@@ -60,12 +60,35 @@ columns, one argument per line when a call does not fit on one line.
 | Classes, structs, enums | `PascalCase` | `FolderScanner` |
 | Functions, variables | `camelCase` | `registerApplicationIdentity()` |
 | Member variables | `m_` + `camelCase` | `m_currentIndex` |
-| Files | `snake_case` | `app_identity.cpp` |
+| C++ files | `PascalCase`, usually named after the main class (exception: `main.cpp`) | `QtImageLoader.hpp`, `AppIdentity.cpp` |
+| Folders | `snake_case` | `services/image_loader/` |
 | Namespaces | `pictorio::snake_case` | `pictorio::folder_scanner` |
-| Test files | `test_<file under test>.cpp` | `test_app_identity.cpp` |
+| Test files | `Test<file under test>.cpp` | `TestAppIdentity.cpp` |
 
 - **Names are verbose.** No single-letter names, not even for loop counters: `imageIndex`, not `i`.
 - **Each function has a single responsibility.**
+
+### Empty line after a closing brace
+
+A closing brace `}` is always followed by an empty line, unless the next line is another closing brace
+or `else`:
+
+```cpp
+if (!fileInfo.exists())
+{
+    return ImageLoadError::FileNotFound;
+}
+
+if (!fileInfo.isFile())
+{
+    return ImageLoadError::NotAFile;
+}
+
+return std::nullopt;
+```
+
+clang-format enforces this only between function and class definitions; inside functions it is checked
+in review.
 
 ### `.cpp` file layout
 
@@ -75,15 +98,15 @@ columns, one argument per line when a call does not fit on one line.
  * SPDX-FileCopyrightText: 2026 OesusDevelopmentStudios
  */
 
-#include "own_header.hpp"          // 1. this file's own header
+#include "OwnHeader.hpp"           // 1. this file's own header
 
 #include <vector>                  // 2. standard library
 
 #include <QString>                 // 3. external libraries (Qt, KDE Frameworks, ...)
 
-#include "utils/app_identity.hpp"  // 4. common helpers
+#include "utils/AppIdentity.hpp"   // 4. common helpers
 
-#include "impl/local_file.hpp"     // 5. local files of this service
+#include "impl/LocalFile.hpp"      // 5. local files of this service
 
 namespace
 {

@@ -31,6 +31,10 @@ AllowShortBlocksOnASingleLine: Never
 
 PointerAlignment: Left
 
+# Empty line between function and class definitions. (The wider rule "an empty line after every
+# closing brace" cannot be expressed in clang-format; see CONTRIBUTING.md.)
+SeparateDefinitionBlocks: Always
+
 # If a call or declaration does not fit on one line, put each argument / parameter on its own line
 BinPackArguments: false
 BinPackParameters: OnePerLine

@@ -10,7 +10,7 @@
 #include <QQmlApplicationEngine>
 #include <QQuickStyle>
 
-#include "utils/app_identity.hpp"
+#include "utils/AppIdentity.hpp"
 
 namespace
 {
